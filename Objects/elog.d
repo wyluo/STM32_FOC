@@ -1,0 +1,9 @@
+.\objects\elog.o: USER\uart\elog.c
+.\objects\elog.o: .\USER\uart\elog.h
+.\objects\elog.o: .\USER\uart\elog_cfg.h
+.\objects\elog.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\elog.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\elog.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\elog.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
+.\objects\elog.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\elog.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdio.h
