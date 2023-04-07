@@ -339,7 +339,7 @@
               <MiscControls>--c99</MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\CORE;.\STM32F10x_FWLib\inc;.\STM32F10x_FWLib\src;.\USER;.\USER\uart;.\USER\adc;.\USER\Delay;.\USER\KEY;.\USER\TIM;.\USER\IQS7211E;.\USER\I2C</IncludePath>
+              <IncludePath>.\CORE;.\STM32F10x_FWLib\inc;.\STM32F10x_FWLib\src;.\USER;.\USER\uart;.\USER\adc;.\USER\Delay;.\USER\KEY;.\USER\TIM;.\USER\IQS7211E;.\USER\I2C;.\USER\SPI;.\USER\OLED;.\USER\bsp_OLED;.\USER\bsp_OLED\DISPLAY;.\USER\bsp_OLED\MENU;.\USER\bsp_OLED\MY_MENU;.\USER\bsp_OLED\ITEM</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -787,8 +787,8 @@
                   <RVCTZI>0</RVCTZI>
                   <RVCTOtherData>0</RVCTOtherData>
                   <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>1</IncludeInBuild>
-                  <AlwaysBuild>1</AlwaysBuild>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>0</AlwaysBuild>
                   <GenerateAssemblyFile>2</GenerateAssemblyFile>
                   <AssembleAssemblyFile>2</AssembleAssemblyFile>
                   <PublicsOnly>2</PublicsOnly>
@@ -838,9 +838,69 @@
           <GroupName>I2C</GroupName>
           <Files>
             <File>
-              <FileName>bsp_iic.c</FileName>
+              <FileName>i2c_bitops.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\USER\I2C\bsp_iic.c</FilePath>
+              <FilePath>.\USER\I2C\i2c_bitops.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\I2C\i2c_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c_hw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\I2C\i2c_hw.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>SPI</GroupName>
+          <Files>
+            <File>
+              <FileName>spi_bitops.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\SPI\spi_bitops.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\SPI\spi_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_hw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\SPI\spi_hw.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>OLED</GroupName>
+          <Files>
+            <File>
+              <FileName>app_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\OLED\app_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\bsp_OLED\bsp_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_Font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\bsp_OLED\bsp_Font.c</FilePath>
+            </File>
+            <File>
+              <FileName>ANIMOTION.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\bsp_OLED\DISPLAY\ANIMOTION.C</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4_fonts.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\OLED\stm32f4_fonts.c</FilePath>
             </File>
           </Files>
         </Group>

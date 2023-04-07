@@ -2,6 +2,8 @@
 #include "app_timer.h"
 #include "app_key_scan.h"
 #include "elog.h"
+#include "bsp_oled.h"
+#include "app_oled.h"
 
 u32 KeyVal;
 stKeyFunc KeyFunc;
@@ -104,6 +106,7 @@ void KeyScan(void)
                     DoubleClickFlag = 1;
                     /* 双击 */
                     KeyFunc.KeyType = KEY_TYPE_DOUBLE_CLICK;
+					ssd1306_off();
 
                     log_i("KEY_TYPE_DOUBLE_CLICK.\r\n");
                 }
@@ -130,6 +133,8 @@ void KeyScan(void)
             ClickFlag = 0;
             /* 清除双击标志位 */
             DoubleClickFlag = 0;
+			
+			ssd1306_on();
 
             log_i("KEY_TYPE_SHORT_UP.\r\n");
         }

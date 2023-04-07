@@ -1,5 +1,5 @@
-#ifndef BSP_IIC_H
-#define BSP_IIC_H
+#ifndef I2C_CORE_H
+#define I2C_CORE_H
 
 #include "stm32f10x.h"
 #include "config.h"
@@ -13,6 +13,24 @@
 #define ANA_IIC_SCL    		PBout(9)
 #define ANA_IIC_SDA    		PBout(8)
 #define ANA_READ_SDA   		PBin(8)
+
+/* the message of i2c device */ 
+struct i2c_dev_message
+{
+    unsigned short  addr;
+    unsigned short  flags;
+    unsigned short  size;
+    unsigned char   *buff;
+    unsigned char   retries;
+    unsigned short  speed;
+};
+
+/* i2c device */
+struct i2c_dev_device
+{
+    int (*xfer)(struct i2c_dev_device *dev, struct i2c_dev_message msgs[], unsigned int num);
+    void *i2c_phy;
+};
 
 void ANA_IIC_GPIO_Init(void);
 void ANA_I2C_Start(void);

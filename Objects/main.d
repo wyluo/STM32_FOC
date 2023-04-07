@@ -35,7 +35,6 @@
 .\objects\main.o: .\USER\TIM\app_timer.h
 .\objects\main.o: .\USER\uart\app_log.h
 .\objects\main.o: USER\config.h
-.\objects\main.o: .\USER\I2C\bsp_iic.h
 .\objects\main.o: .\USER\IQS7211E\IQS7211E.h
 .\objects\main.o: .\USER\uart\elog.h
 .\objects\main.o: .\USER\uart\elog_cfg.h
@@ -44,4 +43,19 @@
 .\objects\main.o: .\USER\KEY\app_key.h
 .\objects\main.o: .\USER\KEY\app_key_scan.h
 .\objects\main.o: .\USER\TIM\smarttimer.h
+.\objects\main.o: .\USER\I2C\i2c_hw.h
+.\objects\main.o: .\USER\I2C\i2c_core.h
+.\objects\main.o: .\USER\SPI\spi_hw.h
+.\objects\main.o: .\USER\SPI\spi_core.h
+.\objects\main.o: .\USER\SPI\spi_bitops.h
+.\objects\main.o: .\USER\OLED\app_oled.h
+.\objects\main.o: .\USER\OLED\stm32f4_fonts.h
+.\objects\main.o: .\USER\bsp_OLED\bsp_oled.h
+.\objects\main.o: .\USER\bsp_OLED\bsp_Font.h
+.\objects\main.o: .\USER\bsp_OLED\DISPLAY\ANIMOTION.H
+.\objects\main.o: .\USER\bsp_OLED\MENU\MENU.H
+.\objects\main.o: .\USER\bsp_OLED\MENU\MENU_TITLE.H
+.\objects\main.o: .\USER\bsp_OLED\DISPLAY\ANIMOTION.H
+.\objects\main.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
+.\objects\main.o: .\USER\bsp_OLED\bsp_oled.h
 .\objects\main.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdlib.h

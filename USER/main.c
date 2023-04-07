@@ -5,13 +5,20 @@
 #include "app_timer.h"
 #include "app_log.h"
 #include "config.h"
-#include "bsp_iic.h"
+
 #include "IQS7211E.h"
 #include "app_log.h"
 #include "elog.h"
 #include "app_key.h"
 #include "app_key_scan.h"
 #include "smarttimer.h"
+
+#include "i2c_hw.h"
+#include "spi_hw.h"
+
+#include "app_oled.h"
+#include "bsp_oled.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -34,6 +41,9 @@ struct date m_date;
 const char datestr[] = "2023:04:06#17:16:00";
 static int8_t sysled_id;
 static int8_t syskey_id;
+
+struct i2c_dev_device i2c0;
+struct spi_bus_device spi_bus1;
 
 static void remove_sysled(void)
 {
@@ -184,6 +194,7 @@ static void set_timetick(void)
 
 int main(void)
 {
+	static int tmp = 0;
 	stim_init();
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 		
@@ -194,8 +205,29 @@ int main(void)
 	set_timetick();
 	app_Key_Init();
 	
+//	IIC_GPIO_Config();
+//	
+//	OLED_Init();
+	
+//	ssd1306_on();
+	
 //	TIM2_Init(99, 7199);//10ms
-	ANA_IIC_GPIO_Init();
+//	stm32f1xx_spi_init(&spi_bus1, 8, &spi_bus1, 8); /* spi bus init */
+	stm32f1xx_i2c_init(&i2c0);
+//	
+	tmp = OLED12864_Init(&i2c0);
+	if(tmp == 0)
+	{
+		log_e("This is normal i2c!");
+	}
+	
+	oled_display();//test code
+	
+//	ssd1306_GotoXY(30, 0);
+//	SSD1306_Puts("SSD1306", &TM_Font_11x18, SSD1306_COLOR_WHITE);
+	
+//	ee_25xx_init(&spi_bus1);
+	
 //	IQS7211E_Init();
 //	IQS7211E_Extix_Init();
 //	LOG_MAIN("this is soft_timer test\r\n");
@@ -209,7 +241,7 @@ int main(void)
 	log_i("before runlater===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
 	stim_runlater(1000, runlater_test);
 	Key_Task();
-
+	
 	while(1)
 	{
 		stim_mainloop();

@@ -6,11 +6,12 @@
 //#include "IQS_I2C.h"
 #include "IQS7211E.h"
 #include "IQS7211E_init.h"
-#include "bsp_iic.h"
+
 #include "bsp_uart.h"
 #include "bsp_delay.h"
 //#include "IQS7211E_init_AZP1263A1.h"
 
+#if 0
 static void IQS7211E_RDY_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -641,9 +642,4 @@ void Process_IQS7211E_Events(void)
         printf("\n END RDY Comms");				
 	}
 }
-
-
-
-
-
-
+#endif

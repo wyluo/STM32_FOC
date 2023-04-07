@@ -35,3 +35,15 @@
 .\objects\app_key_scan.o: .\USER\uart\elog_cfg.h
 .\objects\app_key_scan.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stddef.h
 .\objects\app_key_scan.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\app_key_scan.o: .\USER\bsp_OLED\bsp_oled.h
+.\objects\app_key_scan.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\app_key_scan.o: .\USER\bsp_OLED\bsp_Font.h
+.\objects\app_key_scan.o: .\USER\bsp_OLED\DISPLAY\ANIMOTION.H
+.\objects\app_key_scan.o: .\USER\bsp_OLED\MENU\MENU.H
+.\objects\app_key_scan.o: .\USER\bsp_OLED\MENU\MENU_TITLE.H
+.\objects\app_key_scan.o: .\USER\bsp_OLED\DISPLAY\ANIMOTION.H
+.\objects\app_key_scan.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
+.\objects\app_key_scan.o: .\USER\bsp_OLED\bsp_oled.h
+.\objects\app_key_scan.o: .\USER\OLED\app_oled.h
+.\objects\app_key_scan.o: .\USER\I2C\i2c_core.h
+.\objects\app_key_scan.o: .\USER\OLED\stm32f4_fonts.h
