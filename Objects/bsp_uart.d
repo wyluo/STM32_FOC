@@ -31,3 +31,7 @@
 .\objects\bsp_uart.o: .\STM32F10x_FWLib\inc\misc.h
 .\objects\bsp_uart.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\bsp_uart.o: .\USER\config.h
+.\objects\bsp_uart.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\bsp_uart.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
+.\objects\bsp_uart.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\assert.h
+.\objects\bsp_uart.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h

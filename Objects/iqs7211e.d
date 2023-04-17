@@ -29,7 +29,15 @@
 .\objects\iqs7211e.o: .\STM32F10x_FWLib\inc\stm32f10x_usart.h
 .\objects\iqs7211e.o: .\STM32F10x_FWLib\inc\stm32f10x_wwdg.h
 .\objects\iqs7211e.o: .\STM32F10x_FWLib\inc\misc.h
+.\objects\iqs7211e.o: .\USER\I2C\i2c_core.h
 .\objects\iqs7211e.o: USER\IQS7211E\IQS7211E_init.h
-.\objects\iqs7211e.o: .\USER\uart\bsp_uart.h
+.\objects\iqs7211e.o: .\USER\I2C\i2c_hw.h
+.\objects\iqs7211e.o: .\USER\uart\elog.h
+.\objects\iqs7211e.o: .\USER\uart\elog_cfg.h
+.\objects\iqs7211e.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\iqs7211e.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\iqs7211e.o: .\USER\config.h
 .\objects\iqs7211e.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdio.h
-.\objects\iqs7211e.o: .\USER\Delay\bsp_delay.h
+.\objects\iqs7211e.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\iqs7211e.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
+.\objects\iqs7211e.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\assert.h

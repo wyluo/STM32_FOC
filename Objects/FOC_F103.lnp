@@ -1,6 +1,6 @@
 --cpu Cortex-M3
 ".\objects\core_cm3.o"
-".\objects\startup_stm32f10x_hd.o"
+".\objects\startup_stm32f10x_md.o"
 ".\objects\misc.o"
 ".\objects\stm32f10x_adc.o"
 ".\objects\stm32f10x_bkp.o"
@@ -34,9 +34,11 @@
 ".\objects\app_log.o"
 ".\objects\bsp_delay.o"
 ".\objects\app_key.o"
-".\objects\app_key_scan.o"
+".\objects\hal_key.o"
+".\objects\multi_button.o"
 ".\objects\app_timer.o"
 ".\objects\smarttimer.o"
+".\objects\iqs7211e.o"
 ".\objects\i2c_bitops.o"
 ".\objects\i2c_core.o"
 ".\objects\i2c_hw.o"
@@ -44,10 +46,10 @@
 ".\objects\spi_core.o"
 ".\objects\spi_hw.o"
 ".\objects\app_oled.o"
-".\objects\bsp_oled.o"
 ".\objects\bsp_font.o"
-".\objects\animotion.o"
 ".\objects\stm32f4_fonts.o"
+".\objects\app_menu.o"
+".\objects\atk_mw8266d.o"
 --library_type=microlib --strict --scatter ".\Objects\FOC_F103.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

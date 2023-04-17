@@ -36,5 +36,9 @@
 .\objects\app_timer.o: .\USER\uart\elog_cfg.h
 .\objects\app_timer.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stddef.h
 .\objects\app_timer.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h
-.\objects\app_timer.o: .\USER\KEY\app_key_scan.h
 .\objects\app_timer.o: USER\TIM\smarttimer.h
+.\objects\app_timer.o: .\USER\ATK_MW8266D\atk_mw8266d.h
+.\objects\app_timer.o: .\USER\config.h
+.\objects\app_timer.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\app_timer.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
+.\objects\app_timer.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\assert.h

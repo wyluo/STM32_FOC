@@ -1,6 +1,16 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include <stdbool.h>
+
+#define UNUSED(x)    (void)(x)
+	
+#define KEY_NUM    4
+
 #define BITBAND(addr, bitnum) ((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2)) 
 #define MEM_ADDR(addr)  *((volatile unsigned long  *)(addr)) 
 #define BIT_ADDR(addr, bitnum)   MEM_ADDR(BITBAND(addr, bitnum)) 
@@ -42,15 +52,35 @@
 #define PGout(n)   BIT_ADDR(GPIOG_ODR_Addr,n)  //Êä³ö 
 #define PGin(n)    BIT_ADDR(GPIOG_IDR_Addr,n)  //ÊäÈë
 
-#define SYS_LEDPORT      GPIOD
-#define SYS_LEDCTRL      GPIO_Pin_2
+#define SYS_LEDPORT         GPIOC
+#define SYS_LEDCTRL         GPIO_Pin_13
 
 #ifndef ENABLE_USE_MICRO_LIB
-#define USE_MICRO_LIB 		0
+#define USE_MICRO_LIB           0
 #endif
 
 #ifndef EASYLOGGER_ENABLE
-#define EASYLOGGER_ENABLE   1
+#define EASYLOGGER_ENABLE       1
+#endif
+
+#ifndef MULTITIMER_ENABLE
+#define MULTITIMER_ENABLE       1
+#endif
+
+#ifndef MULTIBUTTON_ENABLE
+#define MULTIBUTTON_ENABLE      0
+#endif
+
+#ifndef TELINK_KEY_MOUDLE
+#define TELINK_KEY_MOUDLE	1
+#endif
+
+#ifndef ATK_MW8266D_ENABLE
+#define ATK_MW8266D_ENABLE	1
+#endif
+
+#ifndef IQS7211E_ENABLE
+#define IQS7211E_ENABLE		0
 #endif
 
 #endif

@@ -24,10 +24,10 @@
 #endif
 
 struct stim_event{
-  uint32_t tick_punch;         
-  uint32_t interval;    
-  uint32_t looptimes;   
-  uint8_t id;     
+  uint32_t tick_punch;
+  uint32_t interval;
+  uint32_t looptimes;
+  uint8_t id;
   uint8_t stat;
   struct stim_event *next;
   struct stim_event *prev;
@@ -39,12 +39,10 @@ struct stim_event_list{
   uint8_t count;
 };
 
-
 struct stim_event_list_manager{
   struct stim_event_list list[2]; 
   uint8_t cur_index;
 };
-
 
 static struct stim_event event_pool[STIM_EVENT_MAX_SIZE];
 static struct stim_event_list_manager list_manager;
@@ -166,7 +164,7 @@ static struct stim_event* malloc_event (void)
     }
   }
   return NULL;
-}		/* -----  end of static function stim_malloc_event  ----- */
+}/* -----  end of static function stim_malloc_event  ----- */
 
 
 /* 
@@ -187,7 +185,7 @@ static void free_event (struct stim_event *event)
   event->prev = NULL;
   event->next = NULL;
 
-}		/* -----  end of static function stim_free_event  ----- */
+}/* -----  end of static function stim_free_event  ----- */
 
 
 /* 
@@ -222,7 +220,7 @@ static void insert_event ( struct stim_event *event,struct stim_event_list *list
       insert_node_prev(event,node,list);
     }
   }
-}		/* -----  end of static function insert_event  ----- */
+}/* -----  end of static function insert_event  ----- */
 
 
 
@@ -246,7 +244,7 @@ static struct stim_event* find_event ( int8_t id, struct stim_event_list *list )
   }
 
   return event;
-}		/* -----  end of static function find_event  ----- */
+}/* -----  end of static function find_event  ----- */
 
 
 
@@ -262,7 +260,7 @@ static void recyle_event ( struct stim_event *event )
 
   remove_node(event,list);
   insert_to_tail(event,&recycle_list);
-}		/* -----  end of static function recyle_event  ----- */
+}/* -----  end of static function recyle_event  ----- */
 
 
 
@@ -296,7 +294,7 @@ static struct stim_event* push_event ( uint32_t delayms, void (*callback)(void),
   }
 
   return event;
-}		/* -----  end of static function stim_push_delay_event  ----- */
+}/* -----  end of static function stim_push_delay_event  ----- */
 
 
 /*

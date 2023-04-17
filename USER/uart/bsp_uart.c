@@ -2,7 +2,7 @@
 #include "config.h"
 
 u8 USART_RX_BUF[USART_REC_LEN];
-u16 USART_RX_STA = 0; 
+//u16 USART_RX_STA = 0; 
 
 //static void NVIC_Config(void)
 //{

@@ -5,25 +5,25 @@ uint8_t MOD = 0;
 
 void IIC_GPIO_Config(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-	
-	/* 使能 I2C_GPIO 时钟 */
-	RCC_APB2PeriphClockCmd(RCC_I2C_PORT, ENABLE);
-	
-	/* 配置SCL SDA引脚 开漏输出 */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
-  	GPIO_InitStructure.GPIO_Pin = I2C_SCL_PIN | I2C_SDA_PIN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitTypeDef GPIO_InitStructure;
 
-	GPIO_Init(GPIO_PORT_I2C, &GPIO_InitStructure);
-	
-	I2C_Stop();
+    /* 使能 I2C_GPIO 时钟 */
+    RCC_APB2PeriphClockCmd(RCC_I2C_PORT, ENABLE);
+
+    /* 配置SCL SDA引脚 开漏输出 */
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
+    GPIO_InitStructure.GPIO_Pin = I2C_SCL_PIN | I2C_SDA_PIN;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+
+    GPIO_Init(GPIO_PORT_I2C, &GPIO_InitStructure);
+
+    I2C_Stop();
 }
 
 static void Delay(void)
 {
-	uint8_t i;
-	for(i = 0; i < 10; i++);
+    uint8_t i;
+    for(i = 0; i < 10; i++);
 }
 
 void I2C_Start(void)

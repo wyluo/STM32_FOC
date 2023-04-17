@@ -22,181 +22,148 @@ static uint8_t ssd1306_buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
 //write oled12864 register
 static char oled12864_write_reg0(u8 reg, u8 data)
 {
-	struct i2c_dev_message oled_msg[1];
-	u8 buff[2] = {0};
-	u8 slave_addr = 0;
-	char ret = 0;
-	  
-	slave_addr = OLED12864_SLAVE0;
-	buff[0] = reg;
-	buff[1] = data;
-	
-	oled_msg[0].addr  = slave_addr;
-	oled_msg[0].flags = I2C_BUS_WR;
-	oled_msg[0].buff  = buff;
-	oled_msg[0].size  = 2;
-	ret = i2c_bus_xfer(oled_i2c_dev, oled_msg, 1);
-	  
-	return ret;
+    struct i2c_dev_message oled_msg[1];
+    u8 buff[2] = {0};
+    u8 slave_addr = 0;
+    char ret = 0;
+      
+    slave_addr = OLED12864_SLAVE0;
+    buff[0] = reg;
+    buff[1] = data;
+
+    oled_msg[0].addr  = slave_addr;
+    oled_msg[0].flags = I2C_BUS_WR;
+    oled_msg[0].buff  = buff;
+    oled_msg[0].size  = 2;
+    ret = i2c_bus_xfer(oled_i2c_dev, oled_msg, 1);
+      
+    return ret;
 }
 
 static void ssd1306_write_cmd(u8 cmd)
 {
-	oled12864_write_reg0(0x00, cmd);
+    oled12864_write_reg0(0x00, cmd);
 }
 
 static void ssd1306_write_data(u8 data)
 {
-	oled12864_write_reg0(0x40, data);
+    oled12864_write_reg0(0x40, data);
 }
 
 //write oled12864 register
-static char oled12864_write_reg(u8 write_addr, u8 *write_buff, u8 write_size)
-{
-	struct i2c_dev_message oled_msg[2];
-	u8  slave_addr;
-	char ret;
-	  
-	slave_addr = OLED12864_SLAVE0;
-	oled_msg[0].addr = slave_addr;
-	oled_msg[0].flags = I2C_BUS_WR;
-	oled_msg[0].buff  = &write_addr;
-	oled_msg[0].size  = 1;
-	oled_msg[1].addr = slave_addr;
-	oled_msg[1].flags = I2C_BUS_WR | I2C_BUS_NO_START;	//×¢Òâ´Ë±êÊ¶
-	oled_msg[1].buff  = write_buff;
-	oled_msg[1].size  = write_size;
-	ret = i2c_bus_xfer(oled_i2c_dev, oled_msg, 2);
-	  
-	return ret;
-}
+// static char oled12864_write_reg(u8 write_addr, u8 *write_buff, u8 write_size)
+// {
+//     struct i2c_dev_message oled_msg[2];
+//     u8  slave_addr;
+//     char ret;
+      
+//     slave_addr = OLED12864_SLAVE0;
+//     oled_msg[0].addr = slave_addr;
+//     oled_msg[0].flags = I2C_BUS_WR;
+//     oled_msg[0].buff  = &write_addr;
+//     oled_msg[0].size  = 1;
+//     oled_msg[1].addr = slave_addr;
+//     oled_msg[1].flags = I2C_BUS_WR | I2C_BUS_NO_START;//×¢ï¿½ï¿½Ë±ï¿½Ê¶
+//     oled_msg[1].buff  = write_buff;
+//     oled_msg[1].size  = write_size;
+//     ret = i2c_bus_xfer(oled_i2c_dev, oled_msg, 2);
+      
+//     return ret;
+// }
 
-static void ssd1306_Write_MultiData(uint8_t *data, uint16_t size)
-{
-	uint8_t tmp_array[SSD1306_WIDTH + 1] = {0};
+//static void ssd1306_Write_MultiData(uint8_t *data, uint16_t size)
+//{
+//    uint8_t tmp_array[SSD1306_WIDTH + 1] = {0};
 
-    memcpy(&tmp_array[0], data, size);
-	
-    oled12864_write_reg(0x40, tmp_array, sizeof(tmp_array));
-}
+//    memcpy(&tmp_array[0], data, size);
 
-static char oled12864_read_reg(u8 read_addr, u8 *read_buff, u8 read_size)
-{
-	struct i2c_dev_message oled_msg[2];
-	u8	buff[1];
-	u8  slave_addr;
-	char ret;
-	  
-	slave_addr = OLED12864_SLAVE0;
-	buff[0] = read_addr;
-	oled_msg[0].addr = slave_addr;
-	oled_msg[0].flags = I2C_BUS_WR;
-	oled_msg[0].buff  = buff;
-	oled_msg[0].size  = 1;
-	oled_msg[1].addr = slave_addr;
-	oled_msg[1].flags = I2C_BUS_RD;
-	oled_msg[1].buff  = read_buff;
-	oled_msg[1].size  = read_size;
-	ret = i2c_bus_xfer(oled_i2c_dev, oled_msg, 2);
-	  
-	return ret;
-}
+//    oled12864_write_reg(0x40, tmp_array, sizeof(tmp_array));
+//}
 
-static void ssd1306_fill(SSD1306_COLOR_t color) 
-{
-    /* Set memory */
-    memset(ssd1306_buffer, (color == SSD1306_COLOR_BLACK) ? 0x00 : 0xFF, sizeof(ssd1306_buffer));
-}
+//static char oled12864_read_reg(u8 read_addr, u8 *read_buff, u8 read_size)
+//{
+//    struct i2c_dev_message oled_msg[2];
+//    u8 buff[1];
+//    u8 slave_addr;
+//    char ret;
 
-static void ssd1306_UpdateScreen(void)
-{
-    uint8_t page;
+//    slave_addr = OLED12864_SLAVE0;
+//    buff[0] = read_addr;
+//    oled_msg[0].addr = slave_addr;
+//    oled_msg[0].flags = I2C_BUS_WR;
+//    oled_msg[0].buff  = buff;
+//    oled_msg[0].size  = 1;
+//    oled_msg[1].addr = slave_addr;
+//    oled_msg[1].flags = I2C_BUS_RD;
+//    oled_msg[1].buff  = read_buff;
+//    oled_msg[1].size  = read_size;
+//    ret = i2c_bus_xfer(oled_i2c_dev, oled_msg, 2);
 
-    for (page = 0; page < 8; page++) 
-    {
-        ssd1306_write_cmd(0xB0 + page);
-        ssd1306_write_cmd(0x00);
-        ssd1306_write_cmd(0x10);
-
-        /* Write multi data */
-        ssd1306_Write_MultiData(&ssd1306_buffer[SSD1306_WIDTH * page], SSD1306_WIDTH);
-    }	
-}
+//    return ret;
+//}
 
 int8_t OLED12864_Init(struct i2c_dev_device *i2c_bus)
 {
-	if(NULL == i2c_bus)
-	{
-		return -1;
-	}
-	oled_i2c_dev = i2c_bus;
-	
-	ssd1306_write_cmd(0xAE);//¹Ø±ÕÏÔÊ¾,¿ªÆôÓÃAF
-	ssd1306_write_cmd(0x20);
+    if(NULL == i2c_bus)
+    {
+        return -1;
+    }
+    oled_i2c_dev = i2c_bus;
 
-	ssd1306_write_cmd(0xB0);
-	ssd1306_write_cmd(0xC8);
-	
-	/*ÉèÖÃÆðÊ¼ÁÐµØÖ·*/
-	ssd1306_write_cmd(0x00);//µÍ4Î»
-	ssd1306_write_cmd(0x10);//¸ß4Î»
-	
-	ssd1306_write_cmd(0x40);
-	ssd1306_write_cmd(0x81);
-	ssd1306_write_cmd(0xff);
-	
-	ssd1306_write_cmd(0xA1);
-	ssd1306_write_cmd(0xA6);
-	ssd1306_write_cmd(0xA8);
-	ssd1306_write_cmd(0x3F);
-	
-	ssd1306_write_cmd(0xA4);
-	ssd1306_write_cmd(0xD3);
-	ssd1306_write_cmd(0x00);
-	ssd1306_write_cmd(0xD5);
-	ssd1306_write_cmd(0xF0);
-	
-	ssd1306_write_cmd(0xD9);
-	ssd1306_write_cmd(0x22);
-	ssd1306_write_cmd(0xDA);
-	ssd1306_write_cmd(0x12);
-	
-	ssd1306_write_cmd(0xDB);
-	ssd1306_write_cmd(0x20);
-	
-	ssd1306_write_cmd(0x8D);
-	ssd1306_write_cmd(0x14);
-	ssd1306_write_cmd(0xAF);
-	
-//	/* Clear screen */
-//	ssd1306_fill(SSD1306_COLOR_BLACK);
-//	
-//	/* Update screen */
-//    ssd1306_UpdateScreen();
-//	
-//	/* Set default values */
-//	SSD1306.CurrentX = 0;
-//	SSD1306.CurrentY = 0;
-//	
-//	SSD1306.Initialized = 1;
-//	
-	return 0;
+    ssd1306_write_cmd(0xAE);
+    ssd1306_write_cmd(0x20);//set menory addressing mode
+
+    ssd1306_write_cmd(0xB0);
+    ssd1306_write_cmd(0xC8);
+
+    ssd1306_write_cmd(0x00);
+    ssd1306_write_cmd(0x10);
+
+    ssd1306_write_cmd(0x40);
+    ssd1306_write_cmd(0x81);
+    ssd1306_write_cmd(0xff);
+
+    ssd1306_write_cmd(0xA1);
+    ssd1306_write_cmd(0xA6);
+    ssd1306_write_cmd(0xA8);
+    ssd1306_write_cmd(0x3F);
+
+    ssd1306_write_cmd(0xA4);
+    ssd1306_write_cmd(0xD3);
+    ssd1306_write_cmd(0x00);
+    ssd1306_write_cmd(0xD5);
+    ssd1306_write_cmd(0xF0);
+
+    ssd1306_write_cmd(0xD9);
+    ssd1306_write_cmd(0x22);
+    ssd1306_write_cmd(0xDA);
+    ssd1306_write_cmd(0x12);
+
+    ssd1306_write_cmd(0xDB);
+    ssd1306_write_cmd(0x20);
+
+    ssd1306_write_cmd(0x8D);
+    ssd1306_write_cmd(0x14);
+    ssd1306_write_cmd(0xAF);
+
+    OLED_Fill_All(0xff);
+    OLED_Fill_All(0x00);
+    return 0;
 }
 
-/*-------------------Ìî³äData---------------------------------*/
 void OLED_Fill_All(uint8_t fill_Data) 
 {
-	uint8_t i, j;
-	for(i = 0; i < 8; i++)
-	{
-		ssd1306_write_cmd(0xb0 + i);			//page0-page7
-		ssd1306_write_cmd(0x00);				//low column start address
-		ssd1306_write_cmd(0x10);				//high column start address
-		for(j = 0; j < 128; j++)
-		{
-			ssd1306_write_data(fill_Data);
-		}
-	}
+    uint8_t i, j;
+    for(i = 0; i < 8; i++)
+    {
+        ssd1306_write_cmd(0xb0 + i);//page0-page7
+        ssd1306_write_cmd(0x00);//low column start address
+        ssd1306_write_cmd(0x10);//high column start address
+        for(j = 0; j < 128; j++)
+        {
+            ssd1306_write_data(fill_Data);
+        }
+    }
 }
 
 void ssd1306_on(void)
@@ -222,7 +189,7 @@ void ssd1306_GotoXY(uint16_t x, uint16_t y)
 
 void SSD1306_DrawPixel(uint16_t x, uint16_t y, SSD1306_COLOR_t color) 
 {
-    if (x >= SSD1306_WIDTH || y >= SSD1306_HEIGHT) 
+    if(x >= SSD1306_WIDTH || y >= SSD1306_HEIGHT) 
     {
         /* Error */
         return;
@@ -245,139 +212,123 @@ void SSD1306_DrawPixel(uint16_t x, uint16_t y, SSD1306_COLOR_t color)
     }
 }
 
-/*
- * º¯Êý×÷ÓÃ : ÔÚÆÁÄ»ÉÏÏÔÊ¾Ò»¸ö×Ö·û
- * ²ÎÊý  ch    : ÒªÏÔÊ¾µÄ×Ö·û
- * ²ÎÊý  Font  : ×ÖÌå
- * ²ÎÊý  color : ÑÕÉ«
- * ·µ»ØÖµ : ÎÞ
- */
-char SSD1306_Putc(char ch, TM_FontDef_t* Font, SSD1306_COLOR_t color) 
+/* 
+x:0-127
+y:0-7
+*/
+static void oled1306_set_cursor(unsigned int y, unsigned int x)
 {
-    uint32_t i, b, j;
-
-    /* Check available space in LCD */
-    if (SSD1306_WIDTH <= (SSD1306.CurrentX + Font->FontWidth) || \
-        SSD1306_HEIGHT <= (SSD1306.CurrentY + Font->FontHeight)) 
-    {
-        /* Error */
-        return 0;
-    }
-
-    /* Go through font */
-    for (i = 0; i < Font->FontHeight; i++) 
-    {
-        b = Font->data[(ch - 32) * Font->FontHeight + i];
-        for (j = 0; j < Font->FontWidth; j++) 
-        {
-            if ((b << j) & 0x8000) 
-            {
-                SSD1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), (SSD1306_COLOR_t) color);
-            } 
-            else 
-            {
-                SSD1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), (SSD1306_COLOR_t)!color);
-            }
-        }
-    }
-
-    /* Increase pointer */
-    SSD1306.CurrentX += Font->FontWidth;
-
-    /* Return character written */
-    return ch;
+    ssd1306_write_cmd(0xb0 | y);
+    ssd1306_write_cmd(((x & 0xf0) >> 4) | 0x10);
+    ssd1306_write_cmd((x & 0x0f) | 0x00);
 }
 
-char SSD1306_Puts(char* str, TM_FontDef_t* Font, SSD1306_COLOR_t color) 
+void OLED_ShowChar(unsigned int line, unsigned int column, char Char)
 {
-    /* Write characters */
-    while (*str) 
-    {
-        /* Write character by character */
-        if (SSD1306_Putc(*str, Font, color) != *str)
-		{
-            /* Return error */
-            return *str;
-        }
-
-        /* Increase string pointer */
-        str++;
-    }
-
-    /* Everything OK, zero should be returned */
-    return *str;
+	uint8_t i;
+	oled1306_set_cursor((line - 1) * 2, (column - 1) * 8);
+	for(i = 0; i < 8; i++)
+	{
+		ssd1306_write_data(OLED_F8x16[Char - ' '][i]);
+	}
+	oled1306_set_cursor((line - 1) * 2 + 1, (column - 1) * 8);
+	for(i = 0; i < 8; i++)
+	{
+		ssd1306_write_data(OLED_F8x16[Char - ' '][i + 8]);
+	}
 }
 
-void OLED_SetPos(unsigned char x, unsigned char y) //ÉèÖÃÆðÊ¼µã×ø±ê
+void OLED_ShowString(uint8_t line, uint8_t column, char *String)
 {
-    ssd1306_write_cmd(0xb0 + y);//y×ø±ê
-    ssd1306_write_cmd(((x & 0xf0) >> 4) | 0x10);//x×ø±ê¸ß4Î»
-    ssd1306_write_cmd((x & 0x0f) | 0x01);//x×ø±êµÍ4Î»
+	uint8_t i;
+	
+	OLED_Fill_All(0xff);
+	OLED_Fill_All(0x00);
+	
+	for(i = 0; String[i] != '\0'; i++)
+	{
+		OLED_ShowChar(line, column + i, String[i]);
+	}
 }
 
-/*ÏÔÊ¾Ò»¸ö16*16µÄºº×Ö
- * x:ÏÔÊ¾µÄÆðÊ¼ÁÐ
- * y£ºÏÔÊ¾µÄÆðÊ¼Ò³
- * N£ºÏÔÊ¾µÄºº×ÖÔÚ×ÖÄ£Êý×éÖÐµÄ±àºÅ£¬¼´Êý×éÖÐµÄµÚ¼¸¸öºº×Ö
- * */
 void OLED_ShowCN(unsigned char x, unsigned char y, unsigned char N)
 {
     unsigned int col = 0;
     for(int row = 0; row < 2; row++)
     {
-        //Ò»¸öºº×ÖÓÐÁ½Ò³£¨Ò»Ò³8ÐÐ£©
-        OLED_SetPos(x, y + row);//ÉèÖÃÆðÊ¼ÐÐºÍÁÐ
-        for(col = 0; col < 16; col++)//Ã¿ÐÐÐ´16×Ö½Ú£¨Ò»×Ö½ÚÒ»ÁÐ£©
+        oled1306_set_cursor(x, y + row);
+        for(col = 0; col < 16; col++)
         {
             ssd1306_write_data(F16x16[2 * N + row][col]);
         }
     }
 }
 
-/*ÏÔÊ¾8*16´óÐ¡µÄÓ¢ÎÄ*/
 void OLED_ShowEN(unsigned char x, unsigned char y)
 {
     int i, j;
-    for(i = 0; i < 9; i++)//9¸ö×Ö½Ú£¬Ã¿¸ö×Ö½ÚÕ¼2Ò³£¨¸ß¶ÈÊÇ16bit£¬Ò»Ò³8bit£©
+    for(i = 0; i < 9; i++)
     {
-        OLED_SetPos(x, y);//ÉèÖÃ¹â±ê
+        oled1306_set_cursor(x, y);
         for(j = 0; j < 8; j++)
-            ssd1306_write_data(F8x16[i][j]);//ÏÔÊ¾×Ö½ÚµÄÉÏ°ë²¿·Ö
-        OLED_SetPos(x, y + 1);//¹â±ê´¹Ö±ÒÆ¶¯1Ò³
+            ssd1306_write_data(F8x16[i][j]);
+        oled1306_set_cursor(x, y + 1);
         for(j = 0; j < 8; j++)
-            ssd1306_write_data(F8x16[i][j + 8]);//ÏÔÊ¾×Ö½ÚµÄÏÂ°ë²¿·Ö
-        x += 8;//Ë®Æ½ÒÆ¶¯ÁÐ
+            ssd1306_write_data(F8x16[i][j + 8]);
+        x += 8;
     }
 }
 
-/*ÏÔÊ¾Ò»¸ö14*16µÄºº×Ö*/
 void OLED_ShowCN_14(unsigned char x, unsigned char y, unsigned char N)
 {
     unsigned int  col = 0;
     for(int row = 0; row < 2; row++)
     {
-        //Ò»¸öºº×ÖÓÐÁ½Ò³£¨Ò»Ò³8ÐÐ£©
-        OLED_SetPos(x, y + row);//ÉèÖÃÆðÊ¼ÐÐºÍÁÐ
-        for(col = 0; col < 14; col++)//Ã¿ÐÐÐ´16×Ö½Ú£¨Ò»×Ö½ÚÒ»ÁÐ£©
+        oled1306_set_cursor(x, y + row);
+        for(col = 0; col < 14; col++)
         {
             ssd1306_write_data(F14x16[2 * N + row][col]);
         }
     }
 }
 
-/*ÏÔÊ¾È«²¿ÐÅÏ¢*/
 void oled_display(void)
 {
-	unsigned char i = 0;
-	OLED_Fill_All(0xff);
-	OLED_Fill_All(0x00);
-    for(i = 0 ; i < 4; i++)
-    {
-        OLED_ShowCN(8 + 2 * i * 16, 2, i);//ÏÔÊ¾16*16ÖÐÎÄ£º»¶Ó­Ê¹ÓÃ
-    }
-    OLED_ShowEN(0, 4);//ÏÔÊ¾Ó¢ÎÄ×ÖÄ¸£ºRT-Thread
-    for(i = 0; i < 4; i++)
-    {
-        OLED_ShowCN_14(72 + i * 14, 4, i);//ÏÔÊ¾14*16ÖÐÎÄ£ºÖÇÄÜÐ¡³µ
-    }	
+//	unsigned char i = 0;
+    OLED_Fill_All(0xff);
+    OLED_Fill_All(0x00);
+//	for(i = 0; i < 4; i++)
+//	{
+//		OLED_ShowCN(8 + 2 * i * 16, 2, i);
+//	}
+//	OLED_ShowEN(0, 4);
+//	for(i = 0; i < 4; i++)
+//	{
+//		OLED_ShowCN_14(72 + i * 14, 4, i);
+//	}
 }
+
+void x_oled1306_DrawBMP(unsigned char x0, unsigned char y0, \
+                        unsigned char x1, unsigned char y1, unsigned char BMP[])
+{
+    unsigned int j = 0;
+    unsigned char x, y;
+
+    if(y1 % 8 == 0) 
+    {
+        y = y1 / 8;
+    }
+    else
+    {
+        y = y1 / 8 + 1;
+    }
+    for(y = y0; y < y1; y++)
+    {
+        oled1306_set_cursor(y, x0);
+        for(x = x0; x < x1; x++)
+        {
+            ssd1306_write_data(BMP[j++]);
+        }
+    }
+} 
+

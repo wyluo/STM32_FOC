@@ -6,12 +6,87 @@
 //#include "IQS_I2C.h"
 #include "IQS7211E.h"
 #include "IQS7211E_init.h"
+#include "i2c_hw.h"
+#include "elog.h"
+#include "config.h"
 
-#include "bsp_uart.h"
-#include "bsp_delay.h"
+//#include "bsp_uart.h"
+//#include "bsp_delay.h"
 //#include "IQS7211E_init_AZP1263A1.h"
 
-#if 0
+#if IQS7211E_ENABLE
+
+struct i2c_dev_device *iqs7211e_i2c_dev = NULL;
+extern struct i2c_dev_device i2c0;
+
+//write lp55231 register
+static char iqs7211e_write_reg0(u8 write_addr, u8 write_data)
+{
+	struct i2c_dev_message iqs7211e_msg[1];
+	u8 buff[2];
+	u8 slave_addr;
+	char ret;
+
+	slave_addr = IQS7211E_ADDR;
+	buff[0] = write_addr;
+	buff[1] = write_data;
+	iqs7211e_msg[0].addr  = slave_addr;
+	iqs7211e_msg[0].flags = I2C_BUS_WR;
+	iqs7211e_msg[0].buff  = buff;
+	iqs7211e_msg[0].size  = 2;
+	ret = i2c_bus_xfer(iqs7211e_i2c_dev, iqs7211e_msg, 1);
+
+	return ret;
+}
+
+//write lp55231 register
+static char iqs7211e_write_reg(u8 s_addr, u8 write_addr, u8 *write_buff, u8 write_size, u8 none)
+{
+	struct i2c_dev_message iqs7211e_msg[2];
+	u8 slave_addr = 0;
+	char ret;
+	
+	UNUSED(none);
+	  
+	slave_addr = s_addr;
+	iqs7211e_msg[0].addr = slave_addr;
+	iqs7211e_msg[0].flags = I2C_BUS_WR;
+	iqs7211e_msg[0].buff  = &write_addr;
+	iqs7211e_msg[0].size  = 1;
+	iqs7211e_msg[1].addr = slave_addr;
+	iqs7211e_msg[1].flags = I2C_BUS_WR | I2C_BUS_NO_START;
+	iqs7211e_msg[1].buff  = write_buff;
+	iqs7211e_msg[1].size  = write_size;
+	ret = i2c_bus_xfer(iqs7211e_i2c_dev, iqs7211e_msg, 2);
+	  
+	return ret;
+}
+
+//read iqs7211e register
+static char iqs7211e_read_reg(u8 s_addr, u8 read_addr, u8 *read_buff, u8 read_size, u8 none)
+{
+	struct i2c_dev_message iqs7211e_msg[2];
+	u8 buff[1];
+	u8 slave_addr = 0;
+	char ret;
+	
+	UNUSED(none);
+	  
+	slave_addr = s_addr;
+	buff[0] = read_addr;
+	iqs7211e_msg[0].addr = slave_addr;
+	iqs7211e_msg[0].flags = I2C_BUS_WR;
+	iqs7211e_msg[0].buff  = buff;
+	iqs7211e_msg[0].size  = 1;
+	iqs7211e_msg[1].addr = slave_addr;
+	iqs7211e_msg[1].flags = I2C_BUS_RD;
+	iqs7211e_msg[1].buff  = read_buff;
+	iqs7211e_msg[1].size  = read_size;
+	ret = i2c_bus_xfer(iqs7211e_i2c_dev, iqs7211e_msg, 2);
+	  
+	return ret;
+}
+
 static void IQS7211E_RDY_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -32,145 +107,38 @@ void IQS7211E_Extix_Init(void)
 	
 	IQS7211E_RDY_Init();
 	
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0);
 	EXTI_InitStructure.EXTI_Line = EXTI_Line0;
   	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;	
   	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
   	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   	EXTI_Init(&EXTI_InitStructure);
 	
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;			//使能按键所在的外部中断通道
-  	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;	//抢占优先级2 
-  	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x02;					//子优先级1
-  	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;								//使能外部中断通道
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+  	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
+  	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x02;
+  	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   	NVIC_Init(&NVIC_InitStructure);
 }
 
 void EXTI0_IRQHandler(void)
 {
-	delay_ms(SystemCoreClock, 10);//消抖
-	if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == 0)
+	if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) == 0)
 	{	  
 		Process_IQS7211E_Events();	
 	}
-	EXTI_ClearITPendingBit(EXTI_Line0);  //清除EXTI0线路挂起位
+	EXTI_ClearITPendingBit(EXTI_Line0);
 }
 
-//IIC写一个字节 
-//reg:寄存器地址
-//data:数据
-//返回值:0,正常
-//    其他,错误代码
-u8 IQS7211E_Write_Byte(u32 addr, u8 reg, u8 data) 				 
-{ 
-    ANA_I2C_Start(); 
-	ANA_IIC_Send_Byte((IQS7211E_ADDR) | 0);//发送器件地址+写命令
-	if(ANA_IIC_Wait_Ack())	//等待应答
-	{
-		ANA_I2C_Stop();
-		return 1;		
-	}
-    ANA_IIC_Send_Byte(reg);	//写寄存器地址
-    ANA_IIC_Wait_Ack();		//等待应答 
-	ANA_IIC_Send_Byte(data);//发送数据
-	if(ANA_IIC_Wait_Ack())	//等待ACK
-	{
-		ANA_I2C_Stop();	 
-		return 1;		 
-	}		 
-    ANA_I2C_Stop();
-	return 0;
-}
-
-//IIC连续写
-//addr:器件地址 
-//reg:寄存器地址
-//len:写入长度
-//buf:数据区
-//返回值:0,正常
-//    其他,错误代码
-uint8_t IQS7211E_Write_Len(uint8_t addr, uint8_t reg, uint8_t *buf, uint8_t len)
+int8_t IQS7211E_Init(struct i2c_dev_device *i2c_bus)
 {
-	uint8_t i; 
-    ANA_I2C_Start(); 
-	ANA_IIC_Send_Byte((addr) | 0);//发送器件地址+写命令	
-	if(ANA_IIC_Wait_Ack())	//等待应答
+	if(NULL == i2c_bus)
 	{
-		ANA_I2C_Stop();		 
-		return 1;		
+		return -1;
 	}
-    ANA_IIC_Send_Byte(reg);	//写寄存器地址
-    ANA_IIC_Wait_Ack();		//等待应答
-	for(i = 0; i < len; i++)
-	{
-		ANA_IIC_Send_Byte(buf[i]);	//发送数据
-		if(ANA_IIC_Wait_Ack())		//等待ACK
-		{
-			ANA_I2C_Stop();	 
-			return 1;		 
-		}		
-	}    
-    ANA_I2C_Stop();	 
-	return 0;	
-}
-
-//IIC读一个字节 
-//reg:寄存器地址 
-//返回值:读到的数据
-u8 IQS7211E_Read_Byte(u8 reg)
-{
-	u8 res;
-    ANA_I2C_Start(); 
-	ANA_IIC_Send_Byte((IQS7211E_ADDR) | 0);//发送器件地址+写命令	
-	ANA_IIC_Wait_Ack();		//等待应答 
-    ANA_IIC_Send_Byte(reg);	//写寄存器地址
-    ANA_IIC_Wait_Ack();		//等待应答
-    ANA_I2C_Start();
-	ANA_IIC_Send_Byte((IQS7211E_ADDR) | 1);//发送器件地址+读命令	
-    ANA_IIC_Wait_Ack();		//等待应答 
-	res = ANA_IIC_Read_Byte(0);//读取数据,发送nACK 
-    ANA_I2C_Stop();			//产生一个停止条件 
-	return res;		
-}
-
-//IIC连续读
-//addr:器件地址
-//reg:要读取的寄存器地址
-//len:要读取的长度
-//buf:读取到的数据存储区
-//返回值:0,正常
-//    其他,错误代码
-uint8_t IQS7211E_Read_Len(uint8_t addr, uint8_t reg, uint8_t *buf, uint8_t len)
-{ 
- 	ANA_I2C_Start(); 
-	ANA_IIC_Send_Byte((addr) | 0);//发送器件地址+写命令
-	if(ANA_IIC_Wait_Ack())	//等待应答
-	{
-		ANA_I2C_Stop();		 
-		return 1;		
-	}
-    ANA_IIC_Send_Byte(reg);	//写寄存器地址
-    ANA_IIC_Wait_Ack();		//等待应答
-    ANA_I2C_Start();
-	ANA_IIC_Send_Byte((addr) | 1);//发送器件地址+读命令
-    ANA_IIC_Wait_Ack();		//等待应答 
-	while(len)
-	{
-		if(len == 1)
-			*buf = IQS7211E_Read_Byte(0);//读数据,发送nACK 
-		else 
-			*buf = IQS7211E_Read_Byte(1);//读数据,发送ACK  
-		len--;
-		buf++;
-	}    
-    ANA_I2C_Stop();	//产生一个停止条件 
-	return 0;	
-}
-
-void IQS7211E_Init(void)
-{
+	iqs7211e_i2c_dev = i2c_bus;	
+	
 	uint8_t buffer[40];
-//	int i = 0;
 
 	/* Change the ALP ATI Compensation */
 	/* Memory Map Position 0x1F - 0x20 */
@@ -179,12 +147,7 @@ void IQS7211E_Init(void)
 	buffer[2] = ALP_COMPENSATION_B_0;
 	buffer[3] = ALP_COMPENSATION_B_1;
 
-//	Write_Data(IQS7211E_ADDR, 0x1F, &buffer[0], 4, STOP_TRUE);
-//	for(i = 0; i < 4; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x1F, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x1F, &buffer[0], 4);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x1F, &buffer[0], 4, STOP_TRUE);
 		
     /* Change the ATI Settings */
 /* Memory Map Position 0x21 - 0x27 */
@@ -203,13 +166,8 @@ void IQS7211E_Init(void)
     buffer[12] = ALP_ATI_TARGET_0;
     buffer[13] = ALP_ATI_TARGET_1;
 
-//    Write_Data(IQS7211E_ADDR,0x21,&buffer[0],14,STOP_TRUE);
-//	for(i = 0; i < 14; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x21, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x21, &buffer[0], 14);
-		
+    iqs7211e_write_reg(IQS7211E_ADDR, 0x21, &buffer[0], 14, STOP_TRUE);
+
     /* Change the Report Rates and Timing */
 /* Memory Map Position 0x28 - 0x32 */
     buffer[0] = ACTIVE_MODE_REPORT_RATE_0;
@@ -235,12 +193,7 @@ void IQS7211E_Init(void)
     buffer[20] = I2C_TIMEOUT_0;
     buffer[21] = I2C_TIMEOUT_1;
     
-//	Write_Data(IQS7211E_ADDR, 0x28, &buffer[0], 22, STOP_TRUE);
-//	for(i = 0; i < 22; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x28, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x28, &buffer[0], 22);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x28, &buffer[0], 22, STOP_TRUE);
 
 	/* Change the ALP Settings */
 	/* Memory Map Position 0x36 - 0x40 */
@@ -267,12 +220,7 @@ void IQS7211E_Init(void)
 	buffer[20] = ALP_HARDWARE_SETTINGS_0;
 	buffer[21] = ALP_HARDWARE_SETTINGS_1;
 		
-//	Write_Data(IQS7211E_ADDR, 0x36, &buffer[0], 22, STOP_TRUE);
-//	for(i = 0; i < 22; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x36, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x36, &buffer[0], 22);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x36, &buffer[0], 22, STOP_TRUE);
 			
 	/* Change the Trackpad Settings */
 /* Memory Map Position 0x41 - 0x4A */
@@ -297,12 +245,7 @@ void IQS7211E_Init(void)
 	buffer[18] = MINOR_VERSION;
 	buffer[19] = MAJOR_VERSION;
 	
-//	Write_Data(IQS7211E_ADDR,0x41,&buffer[0],20,STOP_TRUE);	
-//	for(i = 0; i < 20; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x41, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x41, &buffer[0], 20);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x41, &buffer[0], 20, STOP_TRUE);	
 
 	/* Change the Gesture Settings */
 /* Memory Map Position 0x4B - 0x55 */
@@ -329,12 +272,7 @@ void IQS7211E_Init(void)
 	buffer[20] = SWIPE_ANGLE;
 	buffer[21] = PALM_THRESHOLD;
 	
-//	Write_Data(IQS7211E_ADDR,0x4B,&buffer[0],22,STOP_TRUE);
-//	for(i = 0; i < 22; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x4B, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x4B, &buffer[0], 22);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x4B, &buffer[0], 22, STOP_TRUE);
 
 	/* Change the RxTx Mapping */
 /* Memory Map Position 0x56 - 0x5C */
@@ -353,12 +291,7 @@ void IQS7211E_Init(void)
 	buffer[12] = RX_TX_MAP_12;
 	buffer[13] = RX_TX_MAP_FILLER;
 	
-//	Write_Data(IQS7211E_ADDR,0x56,&buffer[0],14,STOP_TRUE);
-//	for(i = 0; i < 14; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x56, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x56, &buffer[0], 14);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x56, &buffer[0], 14, STOP_TRUE);
 		
 	/* Change the Allocation of channels into cycles 0-9 */
 /* Memory Map Position 0x5D - 0x6B */
@@ -393,12 +326,7 @@ void IQS7211E_Init(void)
 	buffer[28] = CH_1_CYCLE_9;
 	buffer[29] = CH_2_CYCLE_9;		
 	
-//	Write_Data(IQS7211E_ADDR,0x5D,&buffer[0],30,STOP_TRUE);
-//	for(i = 0; i < 30; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x5D, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x5D, &buffer[0], 30);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x5D, &buffer[0], 30, STOP_TRUE);
 		
 	/* Change the Allocation of channels into cycles 10-19 */
 /* Memory Map Position 0x6C - 0x7C */
@@ -436,12 +364,7 @@ void IQS7211E_Init(void)
 	buffer[31] = CH_1_CYCLE_20;
 	buffer[32] = CH_2_CYCLE_20;
 
-//	Write_Data(IQS7211E_ADDR,0x6C,&buffer[0],33,STOP_TRUE);
-//	for(i = 0; i < 33; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x6C, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x6C, &buffer[0], 33);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x6C, &buffer[0], 33, STOP_TRUE);
 	
 	/* Change the System Settings */
 /* Memory Map Position 0x33 - 0x35 */
@@ -452,12 +375,9 @@ void IQS7211E_Init(void)
 	buffer[4] = OTHER_SETTINGS_0;
 	buffer[5] = OTHER_SETTINGS_1;
 	
-//	Write_Data(IQS7211E_ADDR,0x33,&buffer[0],6,STOP_TRUE);
-//   	for(i = 0; i < 6; i++)
-//	{
-//		IQS7211E_Write_Byte(IQS7211E_ADDR, 0x33, buffer[i]);
-//	}
-	IQS7211E_Write_Len(IQS7211E_ADDR, 0x33, &buffer[0], 6);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x33, &buffer[0], 6, STOP_TRUE);
+	
+	return 0;
 }
 
 /*
@@ -466,10 +386,9 @@ void IQS7211E_Init(void)
 void IQS7211E_Stop_Bit_Disabled(void)
 {
 	uint8_t buffer[2];
-
+		  
 	buffer[0] = CONFIG_SETTINGS0 | 0x40;  //bit6 : 1 Write one or two bytes (any data) to the address 0xFF followed by a STOP to end comms;
-	//Write_Data(IQS7211E_ADDR,0x34,&buffer[0],1,STOP_TRUE);
-	IQS7211E_Write_Byte(IQS7211E_ADDR, 0x34, buffer[0]);
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x34, &buffer[0], 1, STOP_TRUE);
 }
 
 /*
@@ -480,9 +399,9 @@ void IQS7211E_Stop_I2C_Comm_Window(void)
 	uint8_t buffer[2];
 
 	buffer[0] = CONFIG_SETTINGS0 & 0xBF;  //bit6 : 1 Write one or two bytes (any data) to the address 0xFF followed by a STOP to end comms;
-	//Write_Data(IQS7211E_ADDR,0x34,&buffer[0],1,STOP_TRUE);
-	IQS7211E_Write_Byte(IQS7211E_ADDR, 0x34, buffer[0]);	
+	iqs7211e_write_reg(IQS7211E_ADDR, 0x34, &buffer[0], 1, STOP_TRUE);
 }
+
 
 void Process_IQS7211E_Events(void)
 {
@@ -493,11 +412,11 @@ void Process_IQS7211E_Events(void)
 //	uint8_t buffer[2] = {0};
 	uint16_t Product_Number = 0;
 	uint16_t Major_Version = 0;
-	uint16_t Minor_Version = 0;	
+	uint16_t Minor_Version = 0;
 
 	static uint8_t Finger_Amount = 0;
 	uint16_t Finger_1_X_coordinate = 0;
-	uint16_t Finger_1_Y_coordinate = 0;	
+	uint16_t Finger_1_Y_coordinate = 0;
 //	uint16_t Finger_2_X_coordinate = 0;
 //	uint16_t Finger_2_Y_coordinate = 0;
 	  
@@ -506,19 +425,16 @@ void Process_IQS7211E_Events(void)
 	{
 		//printf("\n RDY occurred");
 		IQS7211E_Stop_Bit_Disabled();
-
-		//Read_Data(IQS7211E_ADDR,0x00,&Version_Details_buffer[0],6,STOP_TRUE);
-		IQS7211E_Read_Len(IQS7211E_ADDR, 0x00, &Version_Details_buffer[0], 6);	
-		//Read_Data(IQS7211E_ADDR,0x0A,&System_Data_buffer[0],20,STOP_TRUE);
-		IQS7211E_Read_Len(IQS7211E_ADDR, 0x0A, &System_Data_buffer[0], 20);
+		iqs7211e_read_reg(IQS7211E_ADDR, 0x00, &Version_Details_buffer[0], 6, STOP_TRUE);
+		iqs7211e_read_reg(IQS7211E_ADDR, 0x0A, &System_Data_buffer[0], 20, STOP_TRUE);
 		//Read_Data(IQS7211E_ADDR,0x20,&Channel_Touch_Status[0],4,STOP_FAULT);
-			  		  
+
 		//0x0F Register Info Flags
 		if(System_Data_buffer[10] & 0x80)
 		{//Reset occurred
-			printf("\n IQS7211E_Reset_occurred");
-			IQS7211E_Init();
-			printf("\n IQS7211E_Init_finished");
+			log_i("\n IQS7211E_Reset_occurred");
+			IQS7211E_Init(&i2c0);
+			log_i("\n IQS7211E_Init_finished");
 
 			Product_Number = ((uint16_t)Version_Details_buffer[1] << 8) + \
 								Version_Details_buffer[0];
@@ -526,120 +442,120 @@ void Process_IQS7211E_Events(void)
 								Version_Details_buffer[2];
 			Minor_Version = ((uint16_t)Version_Details_buffer[5] << 8) + \
 								Version_Details_buffer[4];
-			printf("\n Product_Number =%d, \
-						Major_Version =%d, \
-						Minor_Version =%d", \
+			log_i("\n Product_Number =%d, \
+					Major_Version =%d, \
+					Minor_Version =%d", \
 					Product_Number, Major_Version, Minor_Version);
 		}
 		else
 		{
-			//Read_Data(IQS7211E_ADDR,0xE3,&PCC_Values[0],64,STOP_FAULT);										 				  
+			//Read_Data(IQS7211E_ADDR,0xE3,&PCC_Values[0],64,STOP_FAULT);
 			if(System_Data_buffer[10] & 0x20)
 			{//ALP ATI Error
-				printf("\n IQS7211E_ALP_ATI_Error");	  
+				log_i("\n IQS7211E_ALP_ATI_Error");
 			}
-					
+
 			if(System_Data_buffer[10] & 0x08)
 			{//ATI Error
-				printf("\n IQS7211E_ATI_Error");	  
+				log_i("\n IQS7211E_ATI_Error");
 			}
 			else if(System_Data_buffer[10] & 0x10)
 			{//ATI active
-				printf("\n IQS7211E_ATI_active");	  
+				log_i("\n IQS7211E_ATI_active");
 			}
 			else
 			{
 				Finger_Amount = System_Data_buffer[11] & 0x03;
 				Finger_1_X_coordinate = ((uint16_t)System_Data_buffer[13] << 8) + \
-											System_Data_buffer[12];                 
+											System_Data_buffer[12];
 				Finger_1_Y_coordinate = ((uint16_t)System_Data_buffer[15]<<8) + \
 											System_Data_buffer[14];
-				printf("\n X_coordinate>> %d", Finger_1_X_coordinate);
-				printf("\n Y_coordinate>> %d", Finger_1_Y_coordinate);
+				log_i("\n X_coordinate>> %d", Finger_1_X_coordinate);
+				log_i("\n Y_coordinate>> %d", Finger_1_Y_coordinate);
 				//Single Tap
-				if(System_Data_buffer[8]&0x01)
+				if(System_Data_buffer[8] & 0x01)
 				{
-					printf("\n Single Tap");	
+					log_i("\n Single Tap");
 				}
-									
+
 				//Double Tap
-				if(System_Data_buffer[8]&0x02)
+				if(System_Data_buffer[8] & 0x02)
 				{
-					printf("\n Double Tap");	
+					log_i("\n Double Tap");
 				}
-									
+
 				//Triple Tap
-				if(System_Data_buffer[8]&0x04)
+				if(System_Data_buffer[8] & 0x04)
 				{
-					printf("\n Triple Tap");	
+					log_i("\n Triple Tap");
 				}
 
 				// Press and Hold
 				if(System_Data_buffer[8]&0x08)
 				{
-					printf("\n Press and Hold");	
+					log_i("\n Press and Hold");
 				}
-									
+
 				//Palm Gesture
-				if(System_Data_buffer[8]&0x10)
+				if(System_Data_buffer[8] & 0x10)
 				{
-					printf("\n Palm Gesture");	
+					log_i("\n Palm Gesture");	
 				}
 
 				//Swipe X+
-				if(System_Data_buffer[9]&0x01)
+				if(System_Data_buffer[9] & 0x01)
 				{
-					printf("\n Swipe X+");	
+					log_i("\n Swipe X+");	
 				}
-									
+
 				//Swipe X-
-				if(System_Data_buffer[9]&0x02)
+				if(System_Data_buffer[9] & 0x02)
 				{
-					printf("\n Swipe X-");	
+					log_i("\n Swipe X-");
 				}
-								
+
 				//Swipe Y+
-				if(System_Data_buffer[9]&0x04)
+				if(System_Data_buffer[9] & 0x04)
 				{
-					printf("\n Swipe Y+");	
+					log_i("\n Swipe Y+");
 				}
-								
+
 				//Swipe Y-
-				if(System_Data_buffer[9]&0x08)
+				if(System_Data_buffer[9] & 0x08)
 				{
-					printf("\n Swipe Y-");	
+					log_i("\n Swipe Y-");	
 				}
-									
+
 				//Swipe and Hold X+
-				if(System_Data_buffer[9]&0x10)
+				if(System_Data_buffer[9] & 0x10)
 				{
-					printf("\n Swipe and Hold X+");	
+					log_i("\n Swipe and Hold X+");
 				}
 			
 				//Swipe and Hold X-
-				if(System_Data_buffer[9]&0x20)
+				if(System_Data_buffer[9] & 0x20)
 				{
-					printf("\n Swipe and Hold X-");	
+					log_i("\n Swipe and Hold X-");
 				}
-									
+
 				//Swipe and Hold Y+
-				if(System_Data_buffer[9]&0x40)
+				if(System_Data_buffer[9] & 0x40)
 				{
-					printf("\n Swipe and Hold Y+");	
+					log_i("\n Swipe and Hold Y+");
 				}
 			
 				//Swipe and Hold Y-
-				if(System_Data_buffer[9]&0x80)
+				if(System_Data_buffer[9] & 0x80)
 				{
-					printf("\n Swipe and Hold Y-");	
+					log_i("\n Swipe and Hold Y-");
 				}
 			}
-		}			
+		}
 		//buffer[0] = 0;
 		//Write_Data(IQS7211E_ADDR,0xFF,&buffer[0],1,STOP_TRUE);
         IQS7211E_Stop_I2C_Comm_Window();
-				
-        printf("\n END RDY Comms");				
+
+        log_i("\n END RDY Comms");
 	}
 }
 #endif

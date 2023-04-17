@@ -6,7 +6,7 @@
 #include "i2c_core.h"
 #include "stm32f4_fonts.h"
 
-#define	OLED12864_SLAVE0	0x3c
+#define OLED12864_SLAVE0    0x3c
 
 /* SSD1306 width in pixels */
 #define SSD1306_WIDTH            128
@@ -29,7 +29,12 @@ void OLED_Fill_All(uint8_t fill_Data);
 void ssd1306_on(void);
 void ssd1306_off(void);
 void ssd1306_GotoXY(uint16_t x, uint16_t y);
-char SSD1306_Puts(char* str, TM_FontDef_t* Font, SSD1306_COLOR_t color);
+//char SSD1306_Puts(char* str, TM_FontDef_t* Font, SSD1306_COLOR_t color);
 void oled_display(void);
+
+void OLED_ShowString(uint8_t Line, uint8_t Column, char *String);
+void x_oled1306_DrawBMP(unsigned char x0, unsigned char y0, \
+                        unsigned char x1, unsigned char y1, unsigned char BMP[]);
+
 
 #endif

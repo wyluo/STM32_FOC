@@ -2,8 +2,8 @@
 #include "../uart/bsp_uart.h"
 #include "../uart/app_log.h"
 #include "elog.h"
-#include "app_key_scan.h"
 #include "smarttimer.h"
+#include "atk_mw8266d.h"
 
 #if TIM_LOG_SWITCH
 #define LOG_TIM(fmt, args...)   DBG_PRINTF(fmt, ##args)
@@ -12,6 +12,8 @@
 #endif
 
 u32 uwTick;
+
+extern vu16 usart3_rx_sta;
 
 void TIM2_Init(u16 arr, u16 psc)
 {
@@ -25,7 +27,8 @@ void TIM2_Init(u16 arr, u16 psc)
 	TIM_TimeBaseInitStructure.TIM_Period = arr;//自动重装值
 	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV4;
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
-	TIM_InternalClockConfig(TIM2);
+	
+//	TIM_InternalClockConfig(TIM2);
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM2, ENABLE);
 	
@@ -38,12 +41,13 @@ void TIM2_Init(u16 arr, u16 psc)
 
 void TIM2_IRQHandler(void)
 {
-	if(TIM_GetITStatus(TIM2, TIM_IT_Update))
+	if(TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
 	{
-//		log_i("this is KeyScan test");
-		KeyScan();
+		log_i("this is KeyScan test");
+		usart3_rx_sta |= (1 << 15);
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+		TIM_Cmd(TIM2, DISABLE);
 	}
-	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 }
 
 /**
@@ -91,7 +95,7 @@ void SystemTickConfig(void)
 */
 void SysTick_Handler(void)
 {
-    uwTick++;
+	uwTick++;
 	stim_tick();
 }
 
@@ -105,8 +109,22 @@ void SysTick_Handler(void)
 */
 uint32_t GetSysTickVal(void)
 {
-    return uwTick;
+	return uwTick;
 }
+
+//void delay_ms(u16 nms)
+//{
+//	u32 temp;
+//	SysTick->LOAD = (u32)nms * fac_ms;//时间加载(SysTick->LOAD为24bit)
+//	SysTick->VAL =0x00;//清空计数器
+//	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk;//开始倒数
+//	do
+//	{
+//		temp=SysTick->CTRL;
+//	}while((temp&0x01)&&!(temp&(1<<16)));//等待时间到达
+//	SysTick->CTRL&=~SysTick_CTRL_ENABLE_Msk;//关闭计数器
+//	SysTick->VAL =0X00;//清空计数器
+//}
 
 
 

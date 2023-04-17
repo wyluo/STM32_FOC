@@ -1,23 +1,32 @@
 #include "stm32f10x.h"
+#include "config.h"
 #include "bsp_uart.h"
 #include "bsp_adc.h"
 #include "bsp_delay.h"
 #include "app_timer.h"
 #include "app_log.h"
-#include "config.h"
 
-#include "IQS7211E.h"
 #include "app_log.h"
 #include "elog.h"
+
 #include "app_key.h"
-#include "app_key_scan.h"
+
+#if MULTIBUTTON_ENABLE
+#include "multi_button.h"
+#endif
+
+#if ATK_MW8266D_ENABLE
+#include "atk_mw8266d.h"
+#endif
+
 #include "smarttimer.h"
 
 #include "i2c_hw.h"
 #include "spi_hw.h"
 
 #include "app_oled.h"
-#include "bsp_oled.h"
+//#include "bsp_oled.h"
+#include "IQS7211E.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,13 +37,18 @@
 #define LOG_MAIN(fmt, args...)
 #endif
 
+#if MULTIBUTTON_ENABLE
+unsigned char btn1_id = 0;
+struct Button btn1;
+#endif
+
 struct date{
-	uint16_t year;
-	uint8_t  month;
-	uint8_t  day;
-	uint8_t hour;
-	uint8_t minute;
-	uint8_t second;
+    uint16_t year;
+    uint8_t  month;
+    uint8_t  day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
 };
 struct date m_date;
 
@@ -43,83 +57,85 @@ static int8_t sysled_id;
 static int8_t syskey_id;
 
 struct i2c_dev_device i2c0;
+struct i2c_dev_device i2c1;
 struct spi_bus_device spi_bus1;
 
 static void remove_sysled(void)
 {
-	stim_kill_event(sysled_id);
+    stim_kill_event(sysled_id);
 }
 
 static void sys_ledflash(void)
 {
-	static uint8_t flag = 0;
+    static uint8_t flag = 0;
 
-	if(flag == 0)
-	{
-		GPIO_ResetBits(SYS_LEDPORT, SYS_LEDCTRL);
-		log_i("led off\r\n");
-	}
-	else
-	{
-		GPIO_SetBits(SYS_LEDPORT, SYS_LEDCTRL);
-		log_i("led on\r\n");
-	}
-	flag = !flag;
+    if(flag == 0)
+    {
+        GPIO_ResetBits(SYS_LEDPORT, SYS_LEDCTRL);
+//      log_i("led off\r\n");
+    }
+    else
+    {
+        GPIO_SetBits(SYS_LEDPORT, SYS_LEDCTRL);
+//      log_i("led on\r\n");
+    }
+    flag = !flag;
 }
 
-static void Key_Task(void)
-{
-	syskey_id = stim_loop(5, KeyScan, STIM_LOOP_FOREVER);
-}
+//static void Key_Task(void)
+//{
+////	syskey_id = stim_loop(5, KeyScan, STIM_LOOP_FOREVER);
+////	syskey_id = stim_loop(5, key_progess, STIM_LOOP_FOREVER);
+//}
 
 static void sys_init(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure = {0};
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
 
-	GPIO_InitStructure.GPIO_Pin = SYS_LEDCTRL;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(SYS_LEDPORT, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = SYS_LEDCTRL;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(SYS_LEDPORT, &GPIO_InitStructure);
 
-	sysled_id = stim_loop(500, sys_ledflash, STIM_LOOP_FOREVER);
-	stim_runlater(20000, remove_sysled);	
+    sysled_id = stim_loop(500, sys_ledflash, STIM_LOOP_FOREVER);
+    stim_runlater(20000, remove_sysled);
 }
 
 static void runlater_test(void)
 {
-	log_i("after runlater===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
-	log_i("before delay===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
-	stim_delay(2000);
-	log_i("after delay===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
+    log_i("after runlater===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
+    log_i("before delay===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
+    stim_delay(2000);
+    log_i("after delay===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
 }
 
 static void increaseday(uint8_t limit)
 {
-	if(++m_date.day > limit)
-	{
-		m_date.day = 1;
-		if(++m_date.month > 12)
-		{
-			m_date.month = 1;
-			m_date.year++;
-		}
-	}
+    if(++m_date.day > limit)
+    {
+        m_date.day = 1;
+        if(++m_date.month > 12)
+        {
+            m_date.month = 1;
+            m_date.year++;
+        }
+    }
 }
 
 static uint8_t isLeap(uint16_t year)
 {
-	if(year % 4 == 0 && \
-		year %100 != 0 && \
-		year % 400 == 0)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+    if(year % 4 == 0 && \
+        year %100 != 0 && \
+        year % 400 == 0)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 static void changeday(void)
@@ -189,62 +205,74 @@ static void set_timetick(void)
 	m_date.second = atoi(datestr + 17);
 
 	stim_loop(1000, simulation_rtc, STIM_LOOP_FOREVER);
-    
 }/* -----  end of static function time_tick  ----- */
 
 int main(void)
 {
-	static int tmp = 0;
-	stim_init();
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-		
-	USART1_Configuration(115200);
-	Easylogger_Init();
+    static int tmp = 0;
+//    static int tmp1 = 0;
+    stim_init();
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 
-	sys_init();
-	set_timetick();
-	app_Key_Init();
-	
-//	IIC_GPIO_Config();
-//	
-//	OLED_Init();
-	
-//	ssd1306_on();
-	
-//	TIM2_Init(99, 7199);//10ms
-//	stm32f1xx_spi_init(&spi_bus1, 8, &spi_bus1, 8); /* spi bus init */
-	stm32f1xx_i2c_init(&i2c0);
-//	
-	tmp = OLED12864_Init(&i2c0);
-	if(tmp == 0)
-	{
-		log_e("This is normal i2c!");
-	}
-	
-	oled_display();//test code
-	
-//	ssd1306_GotoXY(30, 0);
-//	SSD1306_Puts("SSD1306", &TM_Font_11x18, SSD1306_COLOR_WHITE);
-	
-//	ee_25xx_init(&spi_bus1);
-	
-//	IQS7211E_Init();
-//	IQS7211E_Extix_Init();
-//	LOG_MAIN("this is soft_timer test\r\n");
-	log_a("This is assert log output!");
-	log_e("This is error log output!");
-	log_w("This is warning log output!");
-	log_i("This is info log output!");
-	log_d("This is debug log output!");
-	log_v("This is verbose log output!");
-	
-	log_i("before runlater===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
-	stim_runlater(1000, runlater_test);
-	Key_Task();
-	
-	while(1)
-	{
-		stim_mainloop();
-	}
+    USART1_Configuration(115200);
+    #if ATK_MW8266D_ENABLEx
+    atk_mw8266d_usart_config(115200);
+    #endif
+    Easylogger_Init();
+
+    sys_init();
+    set_timetick();
+#if MULTIBUTTON_ENABLE
+    button_init(&btn1, check_key_realse, 0, btn1_id);
+    button_start(&btn1);
+    stim_runlater(5, button_ticks);
+#endif
+    app_key_init();
+
+//  TIM2_Init(99, 7199);//10ms
+//  stm32f1xx_spi_init(&spi_bus1, 8, &spi_bus1, 8); /* spi bus init */
+    stm32f1xx_i2c_init(&i2c0);
+    stm32f1xx_i2c_init(&i2c1);
+
+    tmp = OLED12864_Init(&i2c0);
+    if(tmp != 0)
+    {
+        log_e("error OLED12864 i2c!");
+//        OLED_ShowString(1, 1, "oled init ok");
+    }
+#if IQS7211E_ENABLE
+    tmp1 = IQS7211E_Init(&i2c1);
+    if(tmp1 == 0)
+    {
+        log_e("This is normal IQS8211E i2c!");
+    }
+#endif
+
+//  oled_display();//test code
+//  OLED_ShowString(1, 1, "ABCDEFGHIJKLMNOP");
+
+//  ssd1306_GotoXY(30, 0);
+//  SSD1306_Puts("SSD1306", &TM_Font_11x18, SSD1306_COLOR_WHITE);
+    
+//  ee_25xx_init(&spi_bus1);
+    
+//  IQS7211E_Init();
+//  IQS7211E_Extix_Init();
+//  LOG_MAIN("this is soft_timer test\r\n");
+    log_a("This is assert log output!");
+    log_e("This is error log output!");
+    log_w("This is warning log output!");
+    log_i("This is info log output!");
+    log_d("This is debug log output!");
+    log_v("This is verbose log output!");
+    
+//  log_i("before runlater===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
+    stim_runlater(1000, runlater_test);
+    stim_loop(5, key_scan, STIM_LOOP_FOREVER);
+    
+    while(1)
+    {
+        stim_mainloop();
+    }
 }
 
