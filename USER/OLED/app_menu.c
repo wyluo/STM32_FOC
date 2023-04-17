@@ -191,17 +191,17 @@ unsigned char gImage_info[] = {
 Menu_table table[30] =
 {
     {0, 0, 1, 0, (*tok_home_page)},
-    {1, 2, 5, 0, (*tok_temperature_page)},//二级界面 温湿度
-    {2, 3, 6, 0, (*tok_palygame_page)},//二级界面 游戏
-    {3, 4, 7, 0, (*tok_setting_page)},//二级界面 设置
-    {4, 1, 8, 0, (*tok_info_page)},//二级界面 信息
+    {1, 2, 5, 0, (*tok_temperature_page)},
+    {2, 3, 6, 0, (*tok_palygame_page)},
+    {3, 4, 7, 0, (*tok_setting_page)},
+    {4, 1, 8, 0, (*tok_info_page)},
 
-    {5, 5, 5, 1, (*tok_dht11_page)},//三级界面：DHT11测量温湿度
-    {6, 6, 6, 2, (*tok_conrtolGame_page)},//三级界面：谷歌小恐龙Dinogame
-    {7, 7, 9, 3, (*tok_set_page)},//三级界面：设置普通外设状态 LED
-    {8, 8, 8, 4, (*tok_information_page)},//三级界面：作者和相关项目信息
+    {5, 5, 5, 1, (*tok_dht11_page)},
+    {6, 6, 6, 2, (*tok_conrtolGame_page)},
+    {7, 7, 9, 3, (*tok_set_page)},
+    {8, 8, 8, 4, (*tok_information_page)},
 
-    {9, 9, 7, 3, (*tok_led_page)},//LED控制
+    {9, 9, 7, 3, (*tok_led_page)},
 };
 
 void tok_home_page(void)

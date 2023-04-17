@@ -2,10 +2,8 @@
  * Copyright (c) 2016 Zibin Zheng <znbin@qq.com>
  * All rights reserved
  */
- 
-#include "multi_button.h"
 
-#if MULTIBUTTON_ENABLE
+#include "multi_button.h"
 
 #define EVENT_CB(ev)   if(handle->cb[ev])handle->cb[ev]((Button*)handle)
 
@@ -22,12 +20,12 @@ static struct Button* head_handle = NULL;
   */
 void button_init(struct Button* handle, uint8_t(*pin_level)(uint8_t), uint8_t active_level, uint8_t button_id)
 {
-	memset(handle, 0, sizeof(struct Button));
-	handle->event = (uint8_t)NONE_PRESS;
-	handle->hal_button_Level = pin_level;
-	handle->button_level = handle->hal_button_Level(button_id);
-	handle->active_level = active_level;
-	handle->button_id = button_id;
+    memset(handle, 0, sizeof(struct Button));
+    handle->event = (uint8_t)NONE_PRESS;
+    handle->hal_button_Level = pin_level;
+    handle->button_level = handle->hal_button_Level(button_id);
+    handle->active_level = active_level;
+    handle->button_id = button_id;
 }
 
 /**
@@ -204,5 +202,3 @@ void button_ticks()
 		button_handler(target);
 	}
 }
-#endif
-

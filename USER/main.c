@@ -38,8 +38,8 @@
 #endif
 
 #if MULTIBUTTON_ENABLE
-unsigned char btn1_id = 0;
 struct Button btn1;
+struct Button btn2;
 #endif
 
 struct date{
@@ -140,71 +140,71 @@ static uint8_t isLeap(uint16_t year)
 
 static void changeday(void)
 {
-	switch(m_date.month)
-	{
-		case 1:
-		case 3:
-		case 5:
-		case 7:
-		case 8:
-		case 10:
-		case 12:
-			increaseday(31);
-		break;
-		
-		case 4:
-		case 6:
-		case 9:
-		case 11:
-		  increaseday(30);
-		break;
-		
-		case 2:
-		if(isLeap(m_date.year) == 1)
-		{
-			increaseday(29);
-		}
-		else
-		{
-			increaseday(28);
-		}
-		break;
-		
-		default:
-			break;
-	}
+    switch(m_date.month)
+    {
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12:
+            increaseday(31);
+            break;
+        
+        case 4:
+        case 6:
+        case 9:
+        case 11:
+            increaseday(30);
+            break;
+        
+        case 2:
+            if(isLeap(m_date.year) == 1)
+            {
+                increaseday(29);
+            }
+            else
+            {
+                increaseday(28);
+            }
+            break;
+        
+        default:
+            break;
+    }
 }
 
 static void simulation_rtc(void)
 {
-	if(++m_date.second == 60)
-	{
-		m_date.second = 0;
-		if(++m_date.minute == 60)
-		{
-			m_date.minute = 0;
-			if(++m_date.hour == 24)
-			{
-				m_date.hour = 0;
-				changeday();
-			}
-		}
-	}
+    if(++m_date.second == 60)
+    {
+        m_date.second = 0;
+        if(++m_date.minute == 60)
+        {
+            m_date.minute = 0;
+            if(++m_date.hour == 24)
+            {
+                m_date.hour = 0;
+                changeday();
+            }
+        }
+    }
 //	log_i("time===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
 }
 
 static void set_timetick(void)
 {
-	//xxxx:xx:xx#xx:xx:xx
+    //xxxx:xx:xx#xx:xx:xx
 
-	m_date.year = atoi(datestr);
-	m_date.month = atoi(datestr + 5);
-	m_date.day = atoi(datestr + 8);
-	m_date.hour = atoi(datestr + 11);
-	m_date.minute = atoi(datestr + 14);
-	m_date.second = atoi(datestr + 17);
+    m_date.year = atoi(datestr);
+    m_date.month = atoi(datestr + 5);
+    m_date.day = atoi(datestr + 8);
+    m_date.hour = atoi(datestr + 11);
+    m_date.minute = atoi(datestr + 14);
+    m_date.second = atoi(datestr + 17);
 
-	stim_loop(1000, simulation_rtc, STIM_LOOP_FOREVER);
+    stim_loop(1000, simulation_rtc, STIM_LOOP_FOREVER);
 }/* -----  end of static function time_tick  ----- */
 
 int main(void)
@@ -222,12 +222,16 @@ int main(void)
 
     sys_init();
     set_timetick();
-#if MULTIBUTTON_ENABLE
-    button_init(&btn1, check_key_realse, 0, btn1_id);
-    button_start(&btn1);
-    stim_runlater(5, button_ticks);
-#endif
     app_key_init();
+#if MULTIBUTTON_ENABLE
+    button_init(&btn1, read_button_GPIO, 0, KEY1);
+    button_init(&btn2, read_button_GPIO, 0, KEY2);
+    app_key_process();
+    button_start(&btn1);
+    button_start(&btn2);
+    stim_loop(5, button_ticks, STIM_LOOP_FOREVER);
+#endif
+
 
 //  TIM2_Init(99, 7199);//10ms
 //  stm32f1xx_spi_init(&spi_bus1, 8, &spi_bus1, 8); /* spi bus init */
@@ -268,7 +272,7 @@ int main(void)
     
 //  log_i("before runlater===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
     stim_runlater(1000, runlater_test);
-    stim_loop(5, key_scan, STIM_LOOP_FOREVER);
+//    stim_loop(5, key_scan, STIM_LOOP_FOREVER);
     
     while(1)
     {

@@ -29,13 +29,13 @@
 .\objects\app_key.o: .\STM32F10x_FWLib\inc\stm32f10x_usart.h
 .\objects\app_key.o: .\STM32F10x_FWLib\inc\stm32f10x_wwdg.h
 .\objects\app_key.o: .\STM32F10x_FWLib\inc\misc.h
+.\objects\app_key.o: USER\KEY\hal_key.h
 .\objects\app_key.o: .\USER\config.h
 .\objects\app_key.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\app_key.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\app_key.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
 .\objects\app_key.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\assert.h
 .\objects\app_key.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h
-.\objects\app_key.o: USER\KEY\hal_key.h
 .\objects\app_key.o: .\USER\TIM\app_timer.h
 .\objects\app_key.o: .\USER\uart\elog.h
 .\objects\app_key.o: .\USER\uart\elog_cfg.h
@@ -44,3 +44,4 @@
 .\objects\app_key.o: .\USER\OLED\app_oled.h
 .\objects\app_key.o: .\USER\I2C\i2c_core.h
 .\objects\app_key.o: .\USER\OLED\stm32f4_fonts.h
+.\objects\app_key.o: USER\KEY\multi_button.h

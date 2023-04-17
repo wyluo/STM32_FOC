@@ -2,8 +2,3 @@
 .\objects\multi_button.o: USER\KEY\multi_button.h
 .\objects\multi_button.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\multi_button.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
-.\objects\multi_button.o: .\USER\config.h
-.\objects\multi_button.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdio.h
-.\objects\multi_button.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdlib.h
-.\objects\multi_button.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\assert.h
-.\objects\multi_button.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h

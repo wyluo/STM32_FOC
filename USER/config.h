@@ -68,19 +68,19 @@
 #endif
 
 #ifndef MULTIBUTTON_ENABLE
-#define MULTIBUTTON_ENABLE      0
+#define MULTIBUTTON_ENABLE      1
 #endif
 
 #ifndef TELINK_KEY_MOUDLE
-#define TELINK_KEY_MOUDLE	1
+#define TELINK_KEY_MOUDLE       0
 #endif
 
 #ifndef ATK_MW8266D_ENABLE
-#define ATK_MW8266D_ENABLE	1
+#define ATK_MW8266D_ENABLE      1
 #endif
 
 #ifndef IQS7211E_ENABLE
-#define IQS7211E_ENABLE		0
+#define IQS7211E_ENABLE         0
 #endif
 
 #endif

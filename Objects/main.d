@@ -43,6 +43,8 @@
 .\objects\main.o: .\USER\uart\elog_cfg.h
 .\objects\main.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stddef.h
 .\objects\main.o: .\USER\KEY\app_key.h
+.\objects\main.o: .\USER\KEY\hal_key.h
+.\objects\main.o: .\USER\KEY\multi_button.h
 .\objects\main.o: .\USER\ATK_MW8266D\atk_mw8266d.h
 .\objects\main.o: .\USER\TIM\smarttimer.h
 .\objects\main.o: .\USER\I2C\i2c_hw.h

@@ -6,6 +6,7 @@
 #if MULTIBUTTON_ENABLE
 #include "multi_button.h"
 extern struct Button btn1;
+extern struct Button btn2;
 #endif
 
 u32 KeyVal;
@@ -47,21 +48,21 @@ const key_cfg_t key_cfg[KEY_NUM] =
 //      .key_hold_func = power_key_hold_func,
 //      .key_long_func = power_key_long_func,
 //      .key_release_func = power_key_release_func,
-	},
-	{
-		.port = KEY3_GPIO_PORT,
-		.key_pin = KEY3_GPIO_PIN,
-		.key_hold_cnt = 200,
-		.key_long_cnt = 300,
-		.key_intervel_cnt = 50,
-		.key_default_level = KEY_DOWN,
-		.key_down_level = 0,	/// ATI
-//		.key_short_click_func = power_key_sclick_func,
-//		.key_double_click_func = power_key_dclick_func,
-//		.key_tclick_func = power_key_tclick_func,
-//		.key_hold_func = power_key_hold_func,
-//		.key_long_func = power_key_long_func,
-//		.key_release_func = power_key_release_func,
+    },
+    {
+        .port = KEY3_GPIO_PORT,
+        .key_pin = KEY3_GPIO_PIN,
+        .key_hold_cnt = 200,
+        .key_long_cnt = 300,
+        .key_intervel_cnt = 50,
+        .key_default_level = KEY_DOWN,
+        .key_down_level = 0,
+//      .key_short_click_func = power_key_sclick_func,
+//      .key_double_click_func = power_key_dclick_func,
+//      .key_tclick_func = power_key_tclick_func,
+//      .key_hold_func = power_key_hold_func,
+//      .key_long_func = power_key_long_func,
+//      .key_release_func = power_key_release_func,
 	},
 	{
 		.port = KEY4_GPIO_PORT,
@@ -70,14 +71,14 @@ const key_cfg_t key_cfg[KEY_NUM] =
 		.key_long_cnt = 300,
 		.key_intervel_cnt = 50,
 		.key_default_level = KEY_DOWN,
-		.key_down_level = 0,	/// ATI
+		.key_down_level = 0,
 //		.key_short_click_func = power_key_sclick_func,
 //		.key_double_click_func = power_key_dclick_func,
 //		.key_tclick_func = power_key_tclick_func,
 //		.key_hold_func = power_key_hold_func,
 //		.key_long_func = power_key_long_func,
 //		.key_release_func = power_key_release_func,
-	},	
+	},
 };
 
 void app_key_init(void)
@@ -240,7 +241,21 @@ void key_scan(void)
 
 void app_key_process(void)
 {
-	
+    button_attach(&btn1, PRESS_DOWN,       BTN1_PRESS_DOWN_Handler);
+    button_attach(&btn1, PRESS_UP,         BTN1_PRESS_UP_Handler);
+    button_attach(&btn1, PRESS_REPEAT,     BTN1_PRESS_REPEAT_Handler);
+    button_attach(&btn1, SINGLE_CLICK,     BTN1_SINGLE_Click_Handler);
+    button_attach(&btn1, DOUBLE_CLICK,     BTN1_DOUBLE_Click_Handler);
+    button_attach(&btn1, LONG_PRESS_START, BTN1_LONG_PRESS_START_Handler);
+    button_attach(&btn1, LONG_PRESS_HOLD,  BTN1_LONG_PRESS_HOLD_Handler);
+
+    button_attach(&btn2, PRESS_DOWN,       BTN2_PRESS_DOWN_Handler);
+    button_attach(&btn2, PRESS_UP,         BTN2_PRESS_UP_Handler);
+    button_attach(&btn2, PRESS_REPEAT,     BTN2_PRESS_REPEAT_Handler);
+    button_attach(&btn2, SINGLE_CLICK,     BTN2_SINGLE_Click_Handler);
+    button_attach(&btn2, DOUBLE_CLICK,     BTN2_DOUBLE_Click_Handler);
+    button_attach(&btn2, LONG_PRESS_START, BTN2_LONG_PRESS_START_Handler);
+    button_attach(&btn2, LONG_PRESS_HOLD,  BTN2_LONG_PRESS_HOLD_Handler);
 }
 
 //uint8_t read_button_GPIO(uint8_t button_id)
@@ -256,33 +271,95 @@ void app_key_process(void)
 //}
 
 #if MULTIBUTTON_ENABLE
-void multi_button_init_attach(void)
+//void multi_button_init_attach(void)
+//{
+//    button_attach(&btn1, PRESS_DOWN,       BTN1_PRESS_DOWN_Handler);
+//    button_attach(&btn1, PRESS_UP,         BTN1_PRESS_UP_Handler);
+//    //button_attach(&btn1, PRESS_REPEAT,     BTN1_PRESS_REPEAT_Handler);
+//    //button_attach(&btn1, SINGLE_CLICK,     BTN1_SINGLE_Click_Handler);
+//    //button_attach(&btn1, DOUBLE_CLICK,     BTN1_DOUBLE_Click_Handler);
+//    //button_attach(&btn1, LONG_PRESS_START, BTN1_LONG_PRESS_START_Handler);
+//    //button_attach(&btn1, LONG_PRESS_HOLD,  BTN1_LONG_PRESS_HOLD_Handler);
+//}
+
+void BTN1_PRESS_DOWN_Handler(void *btn)
 {
-	button_attach(&btn1, PRESS_DOWN,       BTN1_PRESS_DOWN_Handler);
-	button_attach(&btn1, PRESS_UP,         BTN1_PRESS_UP_Handler);
-//	button_attach(&btn1, PRESS_REPEAT,     BTN1_PRESS_REPEAT_Handler);
-//	button_attach(&btn1, SINGLE_CLICK,     BTN1_SINGLE_Click_Handler);
-//	button_attach(&btn1, DOUBLE_CLICK,     BTN1_DOUBLE_Click_Handler);
-//	button_attach(&btn1, LONG_PRESS_START, BTN1_LONG_PRESS_START_Handler);
-//	button_attach(&btn1, LONG_PRESS_HOLD,  BTN1_LONG_PRESS_HOLD_Handler);
+    //do something...
+    // log_d("BTN1_PRESS_DOWN_Handler");
 }
 
-void BTN1_PRESS_DOWN_Handler(void* btn)
+void BTN1_PRESS_UP_Handler(void *btn)
 {
-	//do something...
-	log_d("[lwy_key_debug]");
+    //do something...
+    // log_d("BTN1_PRESS_UP_Handler");
 }
 
-void BTN1_PRESS_UP_Handler(void* btn)
+void BTN1_PRESS_REPEAT_Handler(void *btn)
 {
-	//do something...
-	log_d("[lwy_key_debug]");
+    // log_d("BTN1_PRESS_REPEAT_Handler");
+}
+
+void BTN1_SINGLE_Click_Handler(void *btn)
+{
+    log_d("BTN1_SINGLE_Click_Handler");
+}
+    
+void BTN1_DOUBLE_Click_Handler(void *btn)
+{
+    log_d("BTN1_DOUBLE_Click_Handler");
+}
+    
+void BTN1_LONG_PRESS_START_Handler(void *btn)
+{
+    log_d("BTN1_LONG_PRESS_START_Handler");
+}
+    
+void BTN1_LONG_PRESS_HOLD_Handler(void *btn)
+{
+    log_d("BTN1_LONG_PRESS_HOLD_Handler");
+}
+    
+void BTN2_PRESS_DOWN_Handler(void *btn)
+{
+    //do something...
+    log_d("BTN2_PRESS_DOWN_Handler");
+}
+
+void BTN2_PRESS_UP_Handler(void *btn)
+{
+    //do something...
+    log_d("BTN2_PRESS_UP_Handler");
+}
+
+void BTN2_PRESS_REPEAT_Handler(void *btn)
+{
+    log_d("BTN2_PRESS_REPEAT_Handler");
+}
+
+void BTN2_SINGLE_Click_Handler(void *btn)
+{
+    log_d("BTN2_SINGLE_Click_Handler");
+}
+    
+void BTN2_DOUBLE_Click_Handler(void *btn)
+{
+    log_d("BTN2_DOUBLE_Click_Handler");
+}
+    
+void BTN2_LONG_PRESS_START_Handler(void *btn)
+{
+    log_d("BTN2_LONG_PRESS_START_Handler");
+}
+    
+void BTN2_LONG_PRESS_HOLD_Handler(void *btn)
+{
+    log_d("BTN2_LONG_PRESS_HOLD_Handler");
 }
 #endif
 
 //void get_btn_press(void)
 //{
-//	
+//
 //}
 
 uint8_t read_gpio_state(void)
@@ -298,3 +375,21 @@ uint8_t read_gpio_state(void)
     else
         return KEY_NONE;
 }
+
+#if MULTIBUTTON_ENABLE
+uint8_t read_button_GPIO(uint8_t button_id)
+{
+    // you can share the GPIO read function with multiple Buttons
+    switch(button_id)
+    {
+        case KEY1:
+            return GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY1_GPIO_PIN);
+        
+        case KEY2:
+            return GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY2_GPIO_PIN);
+        
+        default:
+            return 0;
+    }
+}
+#endif
