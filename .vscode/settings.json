@@ -21,6 +21,7 @@
     "peacock.color": "#007fff",
     "files.associations": {
         "app_menu.h": "c",
-        "app_oled.h": "c"
+        "app_oled.h": "c",
+        "app_dinogame.h": "c"
     }
 }

@@ -1,11 +1,12 @@
 #include "app_menu.h"
+#include "elog.h"
 #include "config.h"
+#include "app_dinogame.h"
 
 // extern void x_oled1306_DrawBMP(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1, unsigned char BMP[]);
 
 void (*current_operation_index)();
 
-/*–≈∫≈Õº±Í*/
 unsigned char signal_BMP[] =
 {
     0x00, 0x04, 0x0C, 0x14, 0x24, 0xFC, 0x24, 0x14, 0x0C, 0x04,\
@@ -190,13 +191,13 @@ unsigned char gImage_info[] = {
 
 Menu_table table[30] =
 {
-    {0, 0, 1, 0, (*tok_home_page)},
-    {1, 2, 5, 0, (*tok_temperature_page)},
-    {2, 3, 6, 0, (*tok_palygame_page)},
-    {3, 4, 7, 0, (*tok_setting_page)},
-    {4, 1, 8, 0, (*tok_info_page)},
+    {0, 0, 1, 0, (*tok_home_page)},//first page
+    {1, 2, 5, 0, (*tok_temperature_page)},//second page
+    {2, 3, 6, 0, (*tok_palygame_page)},//second page
+    {3, 4, 7, 0, (*tok_setting_page)},//second page
+    {4, 1, 8, 0, (*tok_info_page)},//second page
 
-    {5, 5, 5, 1, (*tok_dht11_page)},
+    {5, 5, 5, 1, (*tok_dht11_page)},//third page
     {6, 6, 6, 2, (*tok_conrtolGame_page)},
     {7, 7, 9, 3, (*tok_set_page)},
     {8, 8, 8, 4, (*tok_information_page)},
@@ -206,86 +207,95 @@ Menu_table table[30] =
 
 void tok_home_page(void)
 {
-    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
-    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
-    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
-    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
-    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
-    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_home);
-    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
-    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+//    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
+//    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
+//    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
+//    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
+//    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
+//    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_home);
+//    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
+//    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+    log_i("home_page");
 }
 
 void tok_temperature_page(void)
 {
-    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
-    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
-    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
-    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
-    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
-    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_temp);
-    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
-    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+//    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
+//    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
+//    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
+//    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
+//    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
+//    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_temp);
+//    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
+//    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+    log_i("temp_page");
 }
 
 void tok_palygame_page(void)
 {
-    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
-    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
-    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
-    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
-    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
-    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_playgame);
-    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
-    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+//    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
+//    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
+//    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
+//    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
+//    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
+//    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_playgame);
+//    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
+//    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+    log_i("play_game_page");
 }
 
 void tok_setting_page(void)
 {
-    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
-    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
-    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
-    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
-    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
-    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_setting);
-    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
-    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+//    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
+//    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
+//    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
+//    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
+//    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
+//    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_setting);
+//    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
+//    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+    log_i("setting_page");
 }
 
 void tok_info_page(void)
 {
-    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
-    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
-    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
-    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
-    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
-    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_info);
-    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
-    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+//    x_oled1306_DrawBMP(0, 0, 20, 3, signal_BMP);
+//    x_oled1306_DrawBMP(20, 0, 36, 2, gImage_bulethouch);
+//    x_oled1306_DrawBMP(112, 0, 128, 2, gImage_engery);
+//    x_oled1306_DrawBMP(4, 6, 20, 8, gImage_yes);
+//    x_oled1306_DrawBMP(12, 4, 28, 6, gImage_left);
+//    x_oled1306_DrawBMP(40, 2, 88, 8, gImage_info);
+//    x_oled1306_DrawBMP(99, 4, 115, 6, gImage_right);
+//    x_oled1306_DrawBMP(107, 6, 123, 8, gImage_back);
+    log_i("info_page");
 }
 
 void tok_dht11_page(void)
 {
-
+    // OLED_ShowString(1, 1, "dht11");
+    log_i("tok_dht11_page\r\n");
 }
 
 void tok_conrtolGame_page(void)
 {
-    // Game_control();
+    Game_control();
+    log_i("tok_conrtolGame_page\r\n");
 }
 
 void tok_set_page(void)
 {
-
+    OLED_ShowString(1, 1, "set page");
 }
 
 void tok_information_page(void)
 {
-
+    OLED_ShowString(1, 1, "Author:lwy");
+    OLED_ShowString(2, 1, "Date:2023/4/17");
+    OLED_ShowString(3, 1, "Lab: Multi-level menu");
 }
 
 void tok_led_page(void)
 {
-
+    GPIO_ResetBits(SYS_LEDPORT, SYS_LEDCTRL);
 }
 

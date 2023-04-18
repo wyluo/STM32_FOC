@@ -35,6 +35,9 @@ void oled_display(void);
 void OLED_ShowString(uint8_t Line, uint8_t Column, char *String);
 void x_oled1306_DrawBMP(unsigned char x0, unsigned char y0, \
                         unsigned char x1, unsigned char y1, unsigned char BMP[]);
+void oled1306_set_cursor(unsigned int y, unsigned int x);
+void ssd1306_write_data(u8 data);
+void oled1306_show_num(uint8_t line, uint8_t column, uint32_t num, uint8_t Length);
 
 
 #endif

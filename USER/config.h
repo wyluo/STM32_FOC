@@ -83,4 +83,8 @@
 #define IQS7211E_ENABLE         0
 #endif
 
+#ifndef CHORME_DINO_ENABLE
+#define CHORME_DINO_ENABLE      1
+#endif
+
 #endif

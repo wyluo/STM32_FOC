@@ -56,6 +56,7 @@ void app_key_process(void);
 
 #if MULTIBUTTON_ENABLE
 void multi_button_init_attach(void);
+
 void BTN1_PRESS_DOWN_Handler(void *btn);
 void BTN1_PRESS_UP_Handler(void *btn);
 void BTN1_PRESS_REPEAT_Handler(void *btn);
@@ -63,6 +64,7 @@ void BTN1_SINGLE_Click_Handler(void *btn);
 void BTN1_DOUBLE_Click_Handler(void *btn);
 void BTN1_LONG_PRESS_START_Handler(void *btn);
 void BTN1_LONG_PRESS_HOLD_Handler(void *btn);
+
 void BTN2_PRESS_DOWN_Handler(void *btn);
 void BTN2_PRESS_UP_Handler(void *btn);
 void BTN2_PRESS_REPEAT_Handler(void *btn);
@@ -70,6 +72,14 @@ void BTN2_SINGLE_Click_Handler(void *btn);
 void BTN2_DOUBLE_Click_Handler(void *btn);
 void BTN2_LONG_PRESS_START_Handler(void *btn);
 void BTN2_LONG_PRESS_HOLD_Handler(void *btn);
+
+void BTN3_PRESS_DOWN_Handler(void *btn);
+void BTN3_PRESS_UP_Handler(void *btn);
+void BTN3_PRESS_REPEAT_Handler(void *btn);
+void BTN3_SINGLE_Click_Handler(void *btn);
+void BTN3_DOUBLE_Click_Handler(void *btn);
+void BTN3_LONG_PRESS_START_Handler(void *btn);
+void BTN3_LONG_PRESS_HOLD_Handler(void *btn);
 #endif
 
 void key_scan(void);

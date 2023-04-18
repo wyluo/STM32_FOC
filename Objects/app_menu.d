@@ -32,9 +32,13 @@
 .\objects\app_menu.o: USER\OLED\app_oled.h
 .\objects\app_menu.o: .\USER\I2C\i2c_core.h
 .\objects\app_menu.o: USER\OLED\stm32f4_fonts.h
+.\objects\app_menu.o: .\USER\uart\elog.h
+.\objects\app_menu.o: .\USER\uart\elog_cfg.h
+.\objects\app_menu.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\app_menu.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\app_menu.o: .\USER\config.h
 .\objects\app_menu.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\app_menu.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\app_menu.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
 .\objects\app_menu.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\assert.h
-.\objects\app_menu.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\app_menu.o: USER\OLED\app_dinogame.h

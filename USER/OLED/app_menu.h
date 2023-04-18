@@ -6,7 +6,7 @@
 
 typedef struct
 {
-    u8 current;//µ±Ç°×´Ì¬Ë÷ÒıºÅ
+    u8 current;//å½“å‰çŠ¶æ€ç´¢å¼•å·
     u8 next;
     u8 enter;
     u8 back;

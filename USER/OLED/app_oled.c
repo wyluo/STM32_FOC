@@ -19,6 +19,9 @@ static SSD1306_t SSD1306;
 /* SSD1306 data buffer */
 static uint8_t ssd1306_buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
 
+static uint32_t oled1306_pow(uint32_t x, uint32_t y);
+
+
 //write oled12864 register
 static char oled12864_write_reg0(u8 reg, u8 data)
 {
@@ -45,7 +48,7 @@ static void ssd1306_write_cmd(u8 cmd)
     oled12864_write_reg0(0x00, cmd);
 }
 
-static void ssd1306_write_data(u8 data)
+void ssd1306_write_data(u8 data)
 {
     oled12864_write_reg0(0x40, data);
 }
@@ -63,7 +66,7 @@ static void ssd1306_write_data(u8 data)
 //     oled_msg[0].buff  = &write_addr;
 //     oled_msg[0].size  = 1;
 //     oled_msg[1].addr = slave_addr;
-//     oled_msg[1].flags = I2C_BUS_WR | I2C_BUS_NO_START;//ע��˱�ʶ
+//     oled_msg[1].flags = I2C_BUS_WR | I2C_BUS_NO_START;
 //     oled_msg[1].buff  = write_buff;
 //     oled_msg[1].size  = write_size;
 //     ret = i2c_bus_xfer(oled_i2c_dev, oled_msg, 2);
@@ -168,16 +171,16 @@ void OLED_Fill_All(uint8_t fill_Data)
 
 void ssd1306_on(void)
 {
-	ssd1306_write_cmd(0x8d);
-	ssd1306_write_cmd(0x14);
-	ssd1306_write_cmd(0xaf);
+    ssd1306_write_cmd(0x8d);
+    ssd1306_write_cmd(0x14);
+    ssd1306_write_cmd(0xaf);
 }
 
 void ssd1306_off(void)
 {
-	ssd1306_write_cmd(0x8d);
-	ssd1306_write_cmd(0x10);
-	ssd1306_write_cmd(0xae);
+    ssd1306_write_cmd(0x8d);
+    ssd1306_write_cmd(0x10);
+    ssd1306_write_cmd(0xae);
 }
 
 void ssd1306_GotoXY(uint16_t x, uint16_t y) 
@@ -212,11 +215,13 @@ void SSD1306_DrawPixel(uint16_t x, uint16_t y, SSD1306_COLOR_t color)
     }
 }
 
-/* 
-x:0-127
-y:0-7
-*/
-static void oled1306_set_cursor(unsigned int y, unsigned int x)
+/**
+  * @brief  OLED设置光标位置
+  * @param  y 以左上角为原点，向下方向的坐标，范围：0~7
+  * @param  x 以左上角为原点，向右方向的坐标，范围：0~127
+  * @retval 无
+  */
+void oled1306_set_cursor(unsigned int y, unsigned int x)
 {
     ssd1306_write_cmd(0xb0 | y);
     ssd1306_write_cmd(((x & 0xf0) >> 4) | 0x10);
@@ -238,17 +243,55 @@ void OLED_ShowChar(unsigned int line, unsigned int column, char Char)
 	}
 }
 
+/**
+  * @brief  OLED显示字符串
+  * @param  Line 起始行位置，范围：1~4
+  * @param  Column 起始列位置，范围：1~16
+  * @param  String 要显示的字符串，范围：ASCII可见字符
+  * @retval 无
+  */
 void OLED_ShowString(uint8_t line, uint8_t column, char *String)
 {
-	uint8_t i;
-	
-	OLED_Fill_All(0xff);
-	OLED_Fill_All(0x00);
-	
-	for(i = 0; String[i] != '\0'; i++)
-	{
-		OLED_ShowChar(line, column + i, String[i]);
-	}
+    uint8_t i;
+
+//    OLED_Fill_All(0xff);
+//    OLED_Fill_All(0x00);
+
+    for(i = 0; String[i] != '\0'; i++)
+    {
+        OLED_ShowChar(line, column + i, String[i]);
+    }
+}
+
+/**
+  * @brief  OLED次方函数
+  * @retval 返回值等于X的Y次方
+  */
+static uint32_t oled1306_pow(uint32_t x, uint32_t y)
+{
+    uint32_t res = 1;
+    while(y--)
+    {
+        res *= x;
+    }
+    return res;
+}
+
+/**
+  * @brief  OLED显示数字（十进制，正数）
+  * @param  line 起始行位置，范围：1~4
+  * @param  column 起始列位置，范围：1~16
+  * @param  num 要显示的数字，范围：0~4294967295
+  * @param  len 要显示数字的长度，范围：1~10
+  * @retval 无
+  */
+void oled1306_show_num(uint8_t line, uint8_t column, uint32_t num, uint8_t len)
+{
+    uint8_t i;
+    for(i = 0; i < len; i++)
+    {
+        OLED_ShowChar(line, (column + i), num / oled1306_pow(10, len - i - 1) % 10 + '0');
+    }
 }
 
 void OLED_ShowCN(unsigned char x, unsigned char y, unsigned char N)

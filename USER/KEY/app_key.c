@@ -3,10 +3,15 @@
 #include "app_timer.h"
 #include "elog.h"
 #include "app_menu.h"
+
+#if CHORME_DINO_ENABLE
+#include "app_dinogame.h"
+#endif
 #if MULTIBUTTON_ENABLE
 #include "multi_button.h"
 extern struct Button btn1;
 extern struct Button btn2;
+extern struct Button btn3;
 #endif
 
 u32 KeyVal;
@@ -88,6 +93,8 @@ void app_key_init(void)
     GPIO_InitTypeDef GPIO_InitStructure = {0};
 
     memset(key_control, 0, sizeof(key_control));
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE);
 
     for(i = 0; i < KEY_NUM; i++)
     {
@@ -154,45 +161,6 @@ void key_scan(void)
                             TrigFlag = 0;
                             WaitKeyUp = 1;
                             KeyFunc.KeyType = KEY_TYPE_LONG;
-//                            OLED_Fill_All(0x00);
-                            switch(read_gpio_state())
-                            {
-                                case KEY1:
-                                    log_i("KEY1_TYPE_LONG.\r\n");
-                                    if(func_index != 6)
-                                    {
-                                        func_index = table[func_index].next;
-                                        OLED_Fill_All(0x00);
-                                    }
-                                    break;
-
-                                case KEY2:
-                                    log_i("KEY2_TYPE_LONG.\r\n");
-                                    if(func_index != 6)
-                                    {
-                                        func_index = table[func_index].enter;
-                                        OLED_Fill_All(0x00);
-                                    }
-                                    break;
-
-                                case KEY3:
-                                    log_i("KEY3_TYPE_LONG.\r\n");
-                                    if(func_index != 6)
-                                    {
-                                        func_index = table[func_index].back;
-                                        OLED_Fill_All(0x00);
-                                    }
-                                    break;
-
-                                case KEY4:
-                                    log_i("KEY4_TYPE_LONG.\r\n");
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                            current_operation_index = table[func_index].current_operation;
-                            (*current_operation_index)();
                         }
                     }
                 }
@@ -256,32 +224,17 @@ void app_key_process(void)
     button_attach(&btn2, DOUBLE_CLICK,     BTN2_DOUBLE_Click_Handler);
     button_attach(&btn2, LONG_PRESS_START, BTN2_LONG_PRESS_START_Handler);
     button_attach(&btn2, LONG_PRESS_HOLD,  BTN2_LONG_PRESS_HOLD_Handler);
+
+    button_attach(&btn3, PRESS_DOWN,       BTN3_PRESS_DOWN_Handler);
+    button_attach(&btn3, PRESS_UP,         BTN3_PRESS_UP_Handler);
+    button_attach(&btn3, PRESS_REPEAT,     BTN3_PRESS_REPEAT_Handler);
+    button_attach(&btn3, SINGLE_CLICK,     BTN3_SINGLE_Click_Handler);
+    button_attach(&btn3, DOUBLE_CLICK,     BTN3_DOUBLE_Click_Handler);
+    button_attach(&btn3, LONG_PRESS_START, BTN3_LONG_PRESS_START_Handler);
+    button_attach(&btn3, LONG_PRESS_HOLD,  BTN3_LONG_PRESS_HOLD_Handler);
 }
 
-//uint8_t read_button_GPIO(uint8_t button_id)
-//{
-//	// you can share the GPIO read function with multiple Buttons
-//	switch(button_id)
-//	{
-//		case btn1_id:
-//			return GPIO_ReadInputDataBit(B1_GPIO_Port, B1_Pin);
-//		default:
-//			return 0;
-//	}	
-//}
-
 #if MULTIBUTTON_ENABLE
-//void multi_button_init_attach(void)
-//{
-//    button_attach(&btn1, PRESS_DOWN,       BTN1_PRESS_DOWN_Handler);
-//    button_attach(&btn1, PRESS_UP,         BTN1_PRESS_UP_Handler);
-//    //button_attach(&btn1, PRESS_REPEAT,     BTN1_PRESS_REPEAT_Handler);
-//    //button_attach(&btn1, SINGLE_CLICK,     BTN1_SINGLE_Click_Handler);
-//    //button_attach(&btn1, DOUBLE_CLICK,     BTN1_DOUBLE_Click_Handler);
-//    //button_attach(&btn1, LONG_PRESS_START, BTN1_LONG_PRESS_START_Handler);
-//    //button_attach(&btn1, LONG_PRESS_HOLD,  BTN1_LONG_PRESS_HOLD_Handler);
-//}
-
 void BTN1_PRESS_DOWN_Handler(void *btn)
 {
     //do something...
@@ -301,66 +254,116 @@ void BTN1_PRESS_REPEAT_Handler(void *btn)
 
 void BTN1_SINGLE_Click_Handler(void *btn)
 {
-    log_d("BTN1_SINGLE_Click_Handler");
+    log_d("BTN1_SINGLE_Click_Handler\r\n");
+    if(func_index != 6)
+    {
+        func_index = table[func_index].next;
+        OLED_Fill_All(0x00);
+    }
+    current_operation_index=table[func_index].current_operation;//执行当前索引号所对应的功能函数
+    (*current_operation_index)();//执行当前操作函数
 }
     
 void BTN1_DOUBLE_Click_Handler(void *btn)
 {
-    log_d("BTN1_DOUBLE_Click_Handler");
+    log_d("BTN1_DOUBLE_Click_Handler\r\n");
+    oled1306_draw_cloud();
 }
     
 void BTN1_LONG_PRESS_START_Handler(void *btn)
 {
-    log_d("BTN1_LONG_PRESS_START_Handler");
+    log_d("BTN1_LONG_PRESS_START_Handler\r\n");
 }
     
 void BTN1_LONG_PRESS_HOLD_Handler(void *btn)
 {
-    log_d("BTN1_LONG_PRESS_HOLD_Handler");
+    log_d("BTN1_LONG_PRESS_HOLD_Handler\r\n");
 }
     
 void BTN2_PRESS_DOWN_Handler(void *btn)
 {
     //do something...
-    log_d("BTN2_PRESS_DOWN_Handler");
+    // log_d("BTN2_PRESS_DOWN_Handler");
 }
 
 void BTN2_PRESS_UP_Handler(void *btn)
 {
     //do something...
-    log_d("BTN2_PRESS_UP_Handler");
+    // log_d("BTN2_PRESS_UP_Handler");
 }
 
 void BTN2_PRESS_REPEAT_Handler(void *btn)
 {
-    log_d("BTN2_PRESS_REPEAT_Handler");
+    // log_d("BTN2_PRESS_REPEAT_Handler");
 }
 
 void BTN2_SINGLE_Click_Handler(void *btn)
 {
-    log_d("BTN2_SINGLE_Click_Handler");
+    log_d("BTN2_SINGLE_Click_Handler\r\n");
+    if(func_index != 6)
+    {
+        func_index = table[func_index].enter;
+        OLED_Fill_All(0x00);
+    }
+    current_operation_index=table[func_index].current_operation;//执行当前索引号所对应的功能函数
+    (*current_operation_index)();//执行当前操作函数
 }
     
 void BTN2_DOUBLE_Click_Handler(void *btn)
 {
-    log_d("BTN2_DOUBLE_Click_Handler");
+    log_d("BTN2_DOUBLE_Click_Handler\r\n");
 }
     
 void BTN2_LONG_PRESS_START_Handler(void *btn)
 {
-    log_d("BTN2_LONG_PRESS_START_Handler");
+    log_d("BTN2_LONG_PRESS_START_Handler\r\n");
 }
     
 void BTN2_LONG_PRESS_HOLD_Handler(void *btn)
 {
-    log_d("BTN2_LONG_PRESS_HOLD_Handler");
+    log_d("BTN2_LONG_PRESS_HOLD_Handler\r\n");
+}
+
+void BTN3_PRESS_DOWN_Handler(void *btn)
+{
+
+}
+
+void BTN3_PRESS_UP_Handler(void *btn)
+{
+
+}
+
+void BTN3_PRESS_REPEAT_Handler(void *btn)
+{
+
+}
+
+void BTN3_SINGLE_Click_Handler(void *btn)
+{
+    log_d("BTN3_SINGLE_Click_Handler\r\n");
+    func_index = table[func_index].back;
+    OLED_Fill_All(0x00);
+
+    current_operation_index=table[func_index].current_operation;//执行当前索引号所对应的功能函数
+    (*current_operation_index)();//执行当前操作函数
+}
+    
+void BTN3_DOUBLE_Click_Handler(void *btn)
+{
+    log_d("BTN3_DOUBLE_Click_Handler\r\n");
+}
+    
+void BTN3_LONG_PRESS_START_Handler(void *btn)
+{
+    log_d("BTN3_LONG_PRESS_START_Handler\r\n");
+}
+    
+void BTN3_LONG_PRESS_HOLD_Handler(void *btn)
+{
+    log_d("BTN3_LONG_PRESS_HOLD_Handler\r\n");
 }
 #endif
-
-//void get_btn_press(void)
-//{
-//
-//}
 
 uint8_t read_gpio_state(void)
 {
@@ -387,6 +390,9 @@ uint8_t read_button_GPIO(uint8_t button_id)
         
         case KEY2:
             return GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY2_GPIO_PIN);
+        
+        case KEY3:
+            return GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY3_GPIO_PIN);
         
         default:
             return 0;

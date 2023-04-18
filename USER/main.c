@@ -40,6 +40,7 @@
 #if MULTIBUTTON_ENABLE
 struct Button btn1;
 struct Button btn2;
+struct Button btn3;
 #endif
 
 struct date{
@@ -226,9 +227,11 @@ int main(void)
 #if MULTIBUTTON_ENABLE
     button_init(&btn1, read_button_GPIO, 0, KEY1);
     button_init(&btn2, read_button_GPIO, 0, KEY2);
+    button_init(&btn3, read_button_GPIO, 0, KEY3);
     app_key_process();
     button_start(&btn1);
     button_start(&btn2);
+    button_start(&btn3);
     stim_loop(5, button_ticks, STIM_LOOP_FOREVER);
 #endif
 
