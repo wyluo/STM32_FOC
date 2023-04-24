@@ -4,6 +4,10 @@
 #include "elog.h"
 #include "app_menu.h"
 
+#if ENABLE_USART1
+#include "bsp_uart.h"
+#endif
+
 #if CHORME_DINO_ENABLE
 #include "app_dinogame.h"
 #endif
@@ -53,37 +57,7 @@ const key_cfg_t key_cfg[KEY_NUM] =
 //      .key_hold_func = power_key_hold_func,
 //      .key_long_func = power_key_long_func,
 //      .key_release_func = power_key_release_func,
-    },
-    {
-        .port = KEY3_GPIO_PORT,
-        .key_pin = KEY3_GPIO_PIN,
-        .key_hold_cnt = 200,
-        .key_long_cnt = 300,
-        .key_intervel_cnt = 50,
-        .key_default_level = KEY_DOWN,
-        .key_down_level = 0,
-//      .key_short_click_func = power_key_sclick_func,
-//      .key_double_click_func = power_key_dclick_func,
-//      .key_tclick_func = power_key_tclick_func,
-//      .key_hold_func = power_key_hold_func,
-//      .key_long_func = power_key_long_func,
-//      .key_release_func = power_key_release_func,
-	},
-	{
-		.port = KEY4_GPIO_PORT,
-		.key_pin = KEY4_GPIO_PIN,
-		.key_hold_cnt = 200,
-		.key_long_cnt = 300,
-		.key_intervel_cnt = 50,
-		.key_default_level = KEY_DOWN,
-		.key_down_level = 0,
-//		.key_short_click_func = power_key_sclick_func,
-//		.key_double_click_func = power_key_dclick_func,
-//		.key_tclick_func = power_key_tclick_func,
-//		.key_hold_func = power_key_hold_func,
-//		.key_long_func = power_key_long_func,
-//		.key_release_func = power_key_release_func,
-	},
+    }
 };
 
 void app_key_init(void)
@@ -94,7 +68,7 @@ void app_key_init(void)
 
     memset(key_control, 0, sizeof(key_control));
     
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 
     for(i = 0; i < KEY_NUM; i++)
     {
@@ -117,7 +91,7 @@ void key_scan(void)
     static uint32_t LastClickTime = 0;
     static uint8_t DoubleClickFlag = 0;
     
-    KeyVal = (KEY4_READ << 3) | (KEY3_READ << 2) | (KEY2_READ << 1) | KEY1_READ;
+    KeyVal = (KEY2_READ << 1) | KEY1_READ;
     
 //  for(i = 0; i < KEY_NUM; i++)
     {
@@ -225,13 +199,13 @@ void app_key_process(void)
     button_attach(&btn2, LONG_PRESS_START, BTN2_LONG_PRESS_START_Handler);
     button_attach(&btn2, LONG_PRESS_HOLD,  BTN2_LONG_PRESS_HOLD_Handler);
 
-    button_attach(&btn3, PRESS_DOWN,       BTN3_PRESS_DOWN_Handler);
-    button_attach(&btn3, PRESS_UP,         BTN3_PRESS_UP_Handler);
-    button_attach(&btn3, PRESS_REPEAT,     BTN3_PRESS_REPEAT_Handler);
-    button_attach(&btn3, SINGLE_CLICK,     BTN3_SINGLE_Click_Handler);
-    button_attach(&btn3, DOUBLE_CLICK,     BTN3_DOUBLE_Click_Handler);
-    button_attach(&btn3, LONG_PRESS_START, BTN3_LONG_PRESS_START_Handler);
-    button_attach(&btn3, LONG_PRESS_HOLD,  BTN3_LONG_PRESS_HOLD_Handler);
+    // button_attach(&btn3, PRESS_DOWN,       BTN3_PRESS_DOWN_Handler);
+    // button_attach(&btn3, PRESS_UP,         BTN3_PRESS_UP_Handler);
+    // button_attach(&btn3, PRESS_REPEAT,     BTN3_PRESS_REPEAT_Handler);
+    // button_attach(&btn3, SINGLE_CLICK,     BTN3_SINGLE_Click_Handler);
+    // button_attach(&btn3, DOUBLE_CLICK,     BTN3_DOUBLE_Click_Handler);
+    // button_attach(&btn3, LONG_PRESS_START, BTN3_LONG_PRESS_START_Handler);
+    // button_attach(&btn3, LONG_PRESS_HOLD,  BTN3_LONG_PRESS_HOLD_Handler);
 }
 
 #if MULTIBUTTON_ENABLE
@@ -254,20 +228,22 @@ void BTN1_PRESS_REPEAT_Handler(void *btn)
 
 void BTN1_SINGLE_Click_Handler(void *btn)
 {
-    log_d("BTN1_SINGLE_Click_Handler\r\n");
-    if(func_index != 6)
-    {
-        func_index = table[func_index].next;
-        OLED_Fill_All(0x00);
-    }
-    current_operation_index=table[func_index].current_operation;//执行当前索引号所对应的功能函数
-    (*current_operation_index)();//执行当前操作函数
+    // log_d("BTN1_SINGLE_Click_Handler\r\n");
+    // if(func_index != 6)
+    // {
+    //     func_index = table[func_index].next;
+    //     OLED_Fill_All(0x00);
+    // }
+    // current_operation_index=table[func_index].current_operation;//执行当前索引号所对应的功能函数
+    // (*current_operation_index)();//执行当前操作函数
+    usart_send_string(USART1, "this is bt1 single click\n");
+    // usart_send(USART1, 0x03);
 }
     
 void BTN1_DOUBLE_Click_Handler(void *btn)
 {
     log_d("BTN1_DOUBLE_Click_Handler\r\n");
-    oled1306_draw_cloud();
+    // oled1306_draw_cloud();
 }
     
 void BTN1_LONG_PRESS_START_Handler(void *btn)
@@ -324,45 +300,45 @@ void BTN2_LONG_PRESS_HOLD_Handler(void *btn)
     log_d("BTN2_LONG_PRESS_HOLD_Handler\r\n");
 }
 
-void BTN3_PRESS_DOWN_Handler(void *btn)
-{
+// void BTN3_PRESS_DOWN_Handler(void *btn)
+// {
 
-}
+// }
 
-void BTN3_PRESS_UP_Handler(void *btn)
-{
+// void BTN3_PRESS_UP_Handler(void *btn)
+// {
 
-}
+// }
 
-void BTN3_PRESS_REPEAT_Handler(void *btn)
-{
+// void BTN3_PRESS_REPEAT_Handler(void *btn)
+// {
 
-}
+// }
 
-void BTN3_SINGLE_Click_Handler(void *btn)
-{
-    log_d("BTN3_SINGLE_Click_Handler\r\n");
-    func_index = table[func_index].back;
-    OLED_Fill_All(0x00);
+// void BTN3_SINGLE_Click_Handler(void *btn)
+// {
+//     log_d("BTN3_SINGLE_Click_Handler\r\n");
+//     func_index = table[func_index].back;
+//     OLED_Fill_All(0x00);
 
-    current_operation_index=table[func_index].current_operation;//执行当前索引号所对应的功能函数
-    (*current_operation_index)();//执行当前操作函数
-}
+//     current_operation_index=table[func_index].current_operation;//执行当前索引号所对应的功能函数
+//     (*current_operation_index)();//执行当前操作函数
+// }
     
-void BTN3_DOUBLE_Click_Handler(void *btn)
-{
-    log_d("BTN3_DOUBLE_Click_Handler\r\n");
-}
+// void BTN3_DOUBLE_Click_Handler(void *btn)
+// {
+//     log_d("BTN3_DOUBLE_Click_Handler\r\n");
+// }
     
-void BTN3_LONG_PRESS_START_Handler(void *btn)
-{
-    log_d("BTN3_LONG_PRESS_START_Handler\r\n");
-}
+// void BTN3_LONG_PRESS_START_Handler(void *btn)
+// {
+//     log_d("BTN3_LONG_PRESS_START_Handler\r\n");
+// }
     
-void BTN3_LONG_PRESS_HOLD_Handler(void *btn)
-{
-    log_d("BTN3_LONG_PRESS_HOLD_Handler\r\n");
-}
+// void BTN3_LONG_PRESS_HOLD_Handler(void *btn)
+// {
+//     log_d("BTN3_LONG_PRESS_HOLD_Handler\r\n");
+// }
 #endif
 
 uint8_t read_gpio_state(void)
@@ -371,10 +347,6 @@ uint8_t read_gpio_state(void)
         return KEY1;
     else if(GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY2_GPIO_PIN) == 0)
         return KEY2;
-    else if(GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY3_GPIO_PIN) == 0)
-        return KEY3;
-    else if(GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY4_GPIO_PIN) == 0)
-        return KEY4;
     else
         return KEY_NONE;
 }
@@ -390,9 +362,6 @@ uint8_t read_button_GPIO(uint8_t button_id)
         
         case KEY2:
             return GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY2_GPIO_PIN);
-        
-        case KEY3:
-            return GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY3_GPIO_PIN);
         
         default:
             return 0;

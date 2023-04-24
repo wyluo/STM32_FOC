@@ -17,8 +17,6 @@ typedef enum
     KEY_NONE = 0,
     KEY1     = 1,
     KEY2     = 2,
-    KEY3     = 3,
-    KEY4     = 4,
 }eKeyList;
 
 typedef enum

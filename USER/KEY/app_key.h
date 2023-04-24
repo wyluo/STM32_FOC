@@ -10,24 +10,14 @@
 #define  DOUBLE_CLICK_TIME       300
 
 #define  KEY1_GPIO_PORT          GPIOA
-#define  KEY1_GPIO_PIN           GPIO_Pin_0
+#define  KEY1_GPIO_PIN           GPIO_Pin_2
 #define  KEY1_GPIO_MODE          GPIO_Mode_IPU
 #define  KEY1_READ               GPIO_ReadInputDataBit(KEY1_GPIO_PORT, KEY1_GPIO_PIN)
 
 #define  KEY2_GPIO_PORT          GPIOA
-#define  KEY2_GPIO_PIN           GPIO_Pin_1
+#define  KEY2_GPIO_PIN           GPIO_Pin_3
 #define  KEY2_GPIO_MODE          GPIO_Mode_IPU
 #define  KEY2_READ               GPIO_ReadInputDataBit(KEY2_GPIO_PORT, KEY2_GPIO_PIN)
-
-#define  KEY3_GPIO_PORT          GPIOA
-#define  KEY3_GPIO_PIN           GPIO_Pin_2
-#define  KEY3_GPIO_MODE          GPIO_Mode_IPU
-#define  KEY3_READ               GPIO_ReadInputDataBit(KEY3_GPIO_PORT, KEY3_GPIO_PIN)
-
-#define  KEY4_GPIO_PORT          GPIOA
-#define  KEY4_GPIO_PIN           GPIO_Pin_3
-#define  KEY4_GPIO_MODE          GPIO_Mode_IPU
-#define  KEY4_READ               GPIO_ReadInputDataBit(KEY4_GPIO_PORT, KEY4_GPIO_PIN)
 
 enum{
     KEY_DOWN = 0,
@@ -73,13 +63,13 @@ void BTN2_DOUBLE_Click_Handler(void *btn);
 void BTN2_LONG_PRESS_START_Handler(void *btn);
 void BTN2_LONG_PRESS_HOLD_Handler(void *btn);
 
-void BTN3_PRESS_DOWN_Handler(void *btn);
-void BTN3_PRESS_UP_Handler(void *btn);
-void BTN3_PRESS_REPEAT_Handler(void *btn);
-void BTN3_SINGLE_Click_Handler(void *btn);
-void BTN3_DOUBLE_Click_Handler(void *btn);
-void BTN3_LONG_PRESS_START_Handler(void *btn);
-void BTN3_LONG_PRESS_HOLD_Handler(void *btn);
+// void BTN3_PRESS_DOWN_Handler(void *btn);
+// void BTN3_PRESS_UP_Handler(void *btn);
+// void BTN3_PRESS_REPEAT_Handler(void *btn);
+// void BTN3_SINGLE_Click_Handler(void *btn);
+// void BTN3_DOUBLE_Click_Handler(void *btn);
+// void BTN3_LONG_PRESS_START_Handler(void *btn);
+// void BTN3_LONG_PRESS_HOLD_Handler(void *btn);
 #endif
 
 void key_scan(void);

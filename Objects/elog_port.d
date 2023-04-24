@@ -33,4 +33,8 @@
 .\objects\elog_port.o: .\STM32F10x_FWLib\inc\stm32f10x_usart.h
 .\objects\elog_port.o: .\STM32F10x_FWLib\inc\stm32f10x_wwdg.h
 .\objects\elog_port.o: .\STM32F10x_FWLib\inc\misc.h
+.\objects\elog_port.o: .\USER\config.h
 .\objects\elog_port.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\elog_port.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\elog_port.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
+.\objects\elog_port.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\assert.h

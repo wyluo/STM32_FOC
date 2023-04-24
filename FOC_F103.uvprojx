@@ -339,7 +339,7 @@
               <MiscControls>--c99</MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\CORE;.\STM32F10x_FWLib\inc;.\STM32F10x_FWLib\src;.\USER;.\USER\uart;.\USER\adc;.\USER\Delay;.\USER\KEY;.\USER\TIM;.\USER\IQS7211E;.\USER\I2C;.\USER\SPI;.\USER\OLED;.\USER\ATK_MW8266D</IncludePath>
+              <IncludePath>.\CORE;.\STM32F10x_FWLib\inc;.\STM32F10x_FWLib\src;.\USER;.\USER\uart;.\USER\adc;.\USER\Delay;.\USER\KEY;.\USER\TIM;.\USER\IQS7211E;.\USER\I2C;.\USER\SPI;.\USER\OLED;.\USER\ATK_MW8266D;.\USER\MPU6050;.\USER\MOTOR</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -969,6 +969,31 @@
               <FileName>atk_mw8266d.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\USER\ATK_MW8266D\atk_mw8266d.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>MPU6050</GroupName>
+          <Files>
+            <File>
+              <FileName>app_mpu6050.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU6050\app_mpu6050.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MPU6050\inv_mpu.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>MOTOR</GroupName>
+          <Files>
+            <File>
+              <FileName>app_motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\MOTOR\app_motor.c</FilePath>
             </File>
           </Files>
         </Group>

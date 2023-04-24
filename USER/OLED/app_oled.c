@@ -21,7 +21,6 @@ static uint8_t ssd1306_buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
 
 static uint32_t oled1306_pow(uint32_t x, uint32_t y);
 
-
 //write oled12864 register
 static char oled12864_write_reg0(u8 reg, u8 data)
 {
@@ -230,17 +229,17 @@ void oled1306_set_cursor(unsigned int y, unsigned int x)
 
 void OLED_ShowChar(unsigned int line, unsigned int column, char Char)
 {
-	uint8_t i;
-	oled1306_set_cursor((line - 1) * 2, (column - 1) * 8);
-	for(i = 0; i < 8; i++)
-	{
-		ssd1306_write_data(OLED_F8x16[Char - ' '][i]);
-	}
-	oled1306_set_cursor((line - 1) * 2 + 1, (column - 1) * 8);
-	for(i = 0; i < 8; i++)
-	{
-		ssd1306_write_data(OLED_F8x16[Char - ' '][i + 8]);
-	}
+    uint8_t i;
+    oled1306_set_cursor((line - 1) * 2, (column - 1) * 8);
+    for(i = 0; i < 8; i++)
+    {
+        ssd1306_write_data(OLED_F8x16[Char - ' '][i]);
+    }
+    oled1306_set_cursor((line - 1) * 2 + 1, (column - 1) * 8);
+    for(i = 0; i < 8; i++)
+    {
+        ssd1306_write_data(OLED_F8x16[Char - ' '][i + 8]);
+    }
 }
 
 /**

@@ -1,3 +1,30 @@
+/**
+****************************************************************************************
+ * @                  江城子 . 程序员之歌
+ * @
+ * @              十年生死两茫茫，写程序，到天亮。
+ * @                  千行代码，Bug何处藏。
+ * @              纵使上线又怎样，朝令改，夕断肠。
+ * @
+ * @              领导每天新想法，天天改，日日忙。
+ * @                  相顾无言，惟有泪千行。
+ * @              每晚灯火阑珊处，夜难寐，加班狂。
+ * @
+****************************************************************************************
+*/
+/**
+****************************************************************************************
+ * @Author: hekies fortwater969@163.com
+ * @Version: 
+ * @Date: 2023-04-17 09:22:44
+ * @LastEditors: hekies fortwater969@163.com
+ * @LastEditTime: 2023-04-24 15:32:39
+ * @FilePath: \FOC_F103C8T6\USER\main.c
+ * @Description: 
+ * @Copyright (c) 2023 by ${git_name_email}, All Rights Reserved. 
+****************************************************************************************
+*/
+
 #include "stm32f10x.h"
 #include "config.h"
 #include "bsp_uart.h"
@@ -15,8 +42,12 @@
 #include "multi_button.h"
 #endif
 
-#if ATK_MW8266D_ENABLE
+#if MW8266D_ENABLE
 #include "atk_mw8266d.h"
+#endif
+
+#if MPU6050_ENABLE
+#include "app_mpu6050.h"
 #endif
 
 #include "smarttimer.h"
@@ -27,6 +58,10 @@
 #include "app_oled.h"
 //#include "bsp_oled.h"
 #include "IQS7211E.h"
+
+#if MOTOR_TB6612_ENABLE
+#include "app_motor.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,6 +94,10 @@ static int8_t syskey_id;
 
 struct i2c_dev_device i2c0;
 struct i2c_dev_device i2c1;
+#if MPU6050_ENABLE
+struct i2c_dev_device i2c2;
+u8 motor_start_flag = 0;
+#endif
 struct spi_bus_device spi_bus1;
 
 static void remove_sysled(void)
@@ -191,7 +230,7 @@ static void simulation_rtc(void)
             }
         }
     }
-//	log_i("time===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
+//log_i("time===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
 }
 
 static void set_timetick(void)
@@ -215,9 +254,12 @@ int main(void)
     stim_init();
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 
-    USART1_Configuration(115200);
-    #if ATK_MW8266D_ENABLEx
-    atk_mw8266d_usart_config(115200);
+    #if ENABLE_USART1
+    usart_init(USART1, 115200);
+    #endif
+    
+    #if MW8266D_ENABLE
+    usart3_init(115200);
     #endif
     Easylogger_Init();
 
@@ -227,32 +269,41 @@ int main(void)
 #if MULTIBUTTON_ENABLE
     button_init(&btn1, read_button_GPIO, 0, KEY1);
     button_init(&btn2, read_button_GPIO, 0, KEY2);
-    button_init(&btn3, read_button_GPIO, 0, KEY3);
+    //button_init(&btn3, read_button_GPIO, 0, KEY3);
     app_key_process();
     button_start(&btn1);
     button_start(&btn2);
-    button_start(&btn3);
+    //button_start(&btn3);
     stim_loop(5, button_ticks, STIM_LOOP_FOREVER);
 #endif
 
-
-//  TIM2_Init(99, 7199);//10ms
 //  stm32f1xx_spi_init(&spi_bus1, 8, &spi_bus1, 8); /* spi bus init */
-    stm32f1xx_i2c_init(&i2c0);
-    stm32f1xx_i2c_init(&i2c1);
+//     stm32f1xx_i2c_init(&i2c0);
+//     stm32f1xx_i2c_init(&i2c1);
 
-    tmp = OLED12864_Init(&i2c0);
-    if(tmp != 0)
-    {
-        log_e("error OLED12864 i2c!");
-//        OLED_ShowString(1, 1, "oled init ok");
-    }
+//     tmp = OLED12864_Init(&i2c0);
+//     if(tmp != 0)
+//     {
+//         log_e("error OLED12864 i2c!");
+// //        OLED_ShowString(1, 1, "oled init ok");
+//     }
 #if IQS7211E_ENABLE
     tmp1 = IQS7211E_Init(&i2c1);
     if(tmp1 == 0)
     {
         log_e("This is normal IQS8211E i2c!");
     }
+#endif
+
+#if MPU6050_ENABLE
+    stm32f1xx_i2c_init(&i2c2);
+    tok_mpu6050_init();
+#endif
+
+#if MOTOR_TB6612_ENABLE
+    motor_pwm_init(7199, 0);//((7199+1) * (0+1)) / 72000000 = 0.0001s = 0.1ms
+    motor_encoder_tim2_init();
+    motor_encoder_tim4_init();
 #endif
 
 //  oled_display();//test code
@@ -266,16 +317,18 @@ int main(void)
 //  IQS7211E_Init();
 //  IQS7211E_Extix_Init();
 //  LOG_MAIN("this is soft_timer test\r\n");
-    log_a("This is assert log output!");
-    log_e("This is error log output!");
-    log_w("This is warning log output!");
-    log_i("This is info log output!");
-    log_d("This is debug log output!");
-    log_v("This is verbose log output!");
+    // log_a("This is assert log output!");
+    // log_e("This is error log output!");
+    // log_w("This is warning log output!");
+    // log_i("This is info log output!");
+    // log_d("This is debug log output!");
+    // log_v("This is verbose log output!");
     
 //  log_i("before runlater===>[%02d:%02d:%02d]\r\n", m_date.hour, m_date.minute, m_date.second);
-    stim_runlater(1000, runlater_test);
+    //stim_runlater(1000, runlater_test);
 //    stim_loop(5, key_scan, STIM_LOOP_FOREVER);
+    usart_send_string(USART1, "this foc_c8t6\r\n");
+    usart_send_string(USART1, "�򵥲���\r\n");
     
     while(1)
     {

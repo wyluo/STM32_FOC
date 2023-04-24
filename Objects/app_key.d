@@ -44,5 +44,5 @@
 .\objects\app_key.o: .\USER\OLED\app_oled.h
 .\objects\app_key.o: .\USER\I2C\i2c_core.h
 .\objects\app_key.o: .\USER\OLED\stm32f4_fonts.h
-.\objects\app_key.o: .\USER\OLED\app_dinogame.h
+.\objects\app_key.o: .\USER\uart\bsp_uart.h
 .\objects\app_key.o: USER\KEY\multi_button.h

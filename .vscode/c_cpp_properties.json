@@ -117,6 +117,8 @@
                 "e:\\code\\keil536\\FOC_F103C8T6\\USER\\SPI",
                 "e:\\code\\keil536\\FOC_F103C8T6\\USER\\OLED",
                 "e:\\code\\keil536\\FOC_F103C8T6\\USER\\ATK_MW8266D",
+                "e:\\code\\keil536\\FOC_F103C8T6\\USER\\MPU6050",
+                "e:\\code\\keil536\\FOC_F103C8T6\\USER\\MOTOR",
                 "E:\\Keil_v536\\ARM\\ARMCC\\include",
                 "E:\\Keil_v536\\ARM\\ARMCC\\include\\rw",
                 "e:\\code\\keil536\\FOC_F103C8T6\\USER\\bsp_OLED",

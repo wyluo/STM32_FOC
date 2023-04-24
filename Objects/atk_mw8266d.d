@@ -35,8 +35,6 @@
 .\objects\atk_mw8266d.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\string.h
 .\objects\atk_mw8266d.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\assert.h
 .\objects\atk_mw8266d.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stdbool.h
-.\objects\atk_mw8266d.o: .\USER\TIM\app_timer.h
-.\objects\atk_mw8266d.o: .\USER\TIM\smarttimer.h
 .\objects\atk_mw8266d.o: .\USER\uart\elog.h
 .\objects\atk_mw8266d.o: .\USER\uart\elog_cfg.h
 .\objects\atk_mw8266d.o: E:\Keil_v536\ARM\ARMCC\Bin\..\include\stddef.h

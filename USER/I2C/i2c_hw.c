@@ -48,7 +48,7 @@ static int8_t gpio_get_scl()
 
 static void gpio_delayus(uint32_t us)
 {
-#if 1  /* ²»ÓÃÏµÍ³ÑÓÊ±Ê±¿ªÆôÕâ¸ö£¡£¡*/
+#if 1  /* ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½Ê±Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	volatile int32_t i;
 	
 	for (; us > 0; us--)
@@ -66,7 +66,6 @@ int ops_i2c_bus_xfer(struct i2c_dev_device *i2c_dev, struct i2c_dev_message msgs
 	return(i2c_bitops_bus_xfer((struct ops_i2c_dev*)(i2c_dev->i2c_phy), msgs, num));
 }
 
-/* ³õÊ¼»¯i2cÇý¶¯ */
 void stm32f1xx_i2c_init(struct i2c_dev_device *i2c_bus)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;

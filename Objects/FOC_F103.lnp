@@ -51,6 +51,9 @@
 ".\objects\app_menu.o"
 ".\objects\app_dinogame.o"
 ".\objects\atk_mw8266d.o"
+".\objects\app_mpu6050.o"
+".\objects\inv_mpu.o"
+".\objects\app_motor.o"
 --library_type=microlib --strict --scatter ".\Objects\FOC_F103.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
